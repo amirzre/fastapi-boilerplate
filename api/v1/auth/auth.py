@@ -94,3 +94,23 @@ async def me(user: User = Depends(get_current_user)) -> UserResponse:
     Retrieve current user information.
     """
     return user
+
+
+@auth_router.delete("/logout", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_authenticated_user)])
+async def logout(
+    request: Request,
+    response: Response,
+    cache: client.Redis = Depends(get_cache),
+    auth_controller: AuthController = Depends(Factory().get_auth_controller),
+) -> None:
+    """
+    Logout user.
+    """
+    await auth_controller.logout(
+        refresh_token=request.cookies.get("Refresh-Token", ""),
+        cache=cache,
+    )
+
+    response.delete_cookie(key="Access-Token", secure=True, httponly=True, samesite="strict")
+    response.delete_cookie(key="Refresh-Token", secure=True, httponly=True, samesite="strict")
+    response.delete_cookie(key="Session-Id", secure=True, httponly=True, samesite="strict")
