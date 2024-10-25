@@ -1,6 +1,6 @@
+import asyncio
 import secrets
 
-from pydantic import EmailStr
 from redis.asyncio import client
 
 from app.models import User
@@ -8,7 +8,7 @@ from app.repositories import UserRepository
 from app.schemas.extra import Token
 from app.schemas.request import UserLoginRequest
 from core.controller import BaseController
-from core.exceptions import BadRequestException
+from core.exceptions import BadRequestException, NotFoundException, UnauthorizedException
 from core.security import JWTHandler, PasswordHandler
 
 
@@ -38,8 +38,29 @@ class AuthController(BaseController[User]):
 
         await cache.set(name=refresh_token, value=str(user.uuid), ex=JWTHandler.refresh_token_expire)
 
-        return Token(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            csrf_token=csrf_token,
+        return Token(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
+
+    async def refresh_token(self, *, old_refresh_token: str, session_id: str, cache: client.Redis) -> Token:
+        uuid, ttl = await asyncio.gather(cache.get(old_refresh_token), cache.ttl(old_refresh_token))
+        if not uuid or not session_id:
+            raise UnauthorizedException(message="Invalid token or missing session ID.")
+
+        user = await self.user_repository.get_by_uuid(uuid=uuid)
+        if not user:
+            raise NotFoundException(message="User not found.")
+
+        access_token = JWTHandler.encode(payload={"uuid": str(uuid), "role": user.role})
+        refresh_token = JWTHandler.encode_refresh_token(
+            payload={"sub": "refresh_token", "verify": str(uuid), "role": user.role}
         )
+        csrf_token = secrets.token_hex(32)
+
+        await asyncio.gather(cache.set(name=refresh_token, value=uuid, ex=ttl), cache.delete(old_refresh_token))
+
+        return Token(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
+
+    async def logout(self, *, refresh_token: str, cache: client.Redis) -> None:
+        if not refresh_token:
+            raise NotFoundException(message="Refresh token not found.")
+        await cache.delete(refresh_token)
+        return None
