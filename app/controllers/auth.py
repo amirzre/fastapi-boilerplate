@@ -58,3 +58,9 @@ class AuthController(BaseController[User]):
         await asyncio.gather(cache.set(name=refresh_token, value=uuid, ex=ttl), cache.delete(old_refresh_token))
 
         return Token(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
+
+    async def logout(self, *, refresh_token: str, cache: client.Redis) -> None:
+        if not refresh_token:
+            raise NotFoundException(message="Refresh token not found.")
+        await cache.delete(refresh_token)
+        return None
