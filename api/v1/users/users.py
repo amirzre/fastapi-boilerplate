@@ -6,11 +6,12 @@ from app.controllers import UserController
 from app.schemas.request import RegisterUserRequest, UpdateUserRequest
 from app.schemas.response import UserResponse
 from core.factory import Factory
+from core.fastapi.dependencies import IsAdmin, IsAuthenticated, PermissionDependency
 
 user_router = APIRouter()
 
 
-@user_router.get("/")
+@user_router.get("/", dependencies=[Depends(PermissionDependency([IsAdmin]))])
 async def get_users(user_controller: UserController = Depends(Factory().get_user_controller)) -> list[UserResponse]:
     """
     Retrieve users.
@@ -18,7 +19,7 @@ async def get_users(user_controller: UserController = Depends(Factory().get_user
     return await user_controller.get_all()
 
 
-@user_router.get("/{id}")
+@user_router.get("/{id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def get_user(id=UUID, user_controller: UserController = Depends(Factory().get_user_controller)) -> UserResponse:
     """
     Retrieve user by ID.
@@ -37,7 +38,7 @@ async def register_user(
     return await user_controller.register_user(register_user_request=register_user_request)
 
 
-@user_router.put("/{id}")
+@user_router.put("/{id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def update_user(
     id: UUID,
     update_user_request: UpdateUserRequest,
@@ -49,7 +50,9 @@ async def update_user(
     return await user_controller.update_user(user_uuid=id, update_user_request=update_user_request)
 
 
-@user_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@user_router.delete(
+    "/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
+)
 async def delete_user(
     id: UUID,
     user_controller: UserController = Depends(Factory().get_user_controller),
