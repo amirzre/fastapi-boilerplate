@@ -33,7 +33,8 @@ class IsAuthenticated(BasePermission):
     exception = UnauthorizedException
 
     async def has_permission(self, request: Request) -> bool:
-        return request.user is not None and request.user.uuid is not None
+        user = request.state.user
+        return user is not None and user.get("uuid") is not None
 
 
 class IsAdmin(IsAuthenticated):
@@ -43,12 +44,7 @@ class IsAdmin(IsAuthenticated):
         if not await super().has_permission(request):
             return False
 
-        return request.user.role == UserRole.ADMIN
-
-
-class AllowAll(BasePermission):
-    async def has_permission(self, request: Request) -> bool:
-        return True
+        return request.state.user.get("role") == UserRole.ADMIN
 
 
 class PermissionDependency(SecurityBase):
