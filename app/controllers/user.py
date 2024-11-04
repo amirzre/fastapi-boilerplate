@@ -2,7 +2,9 @@ from uuid import UUID
 
 from app.models import User
 from app.repositories import UserRepository
+from app.schemas.extra import PaginationResponse, UserFilterParams
 from app.schemas.request import RegisterUserRequest, UpdateUserRequest
+from app.schemas.response import UserResponse
 from core.controller import BaseController
 from core.db import Transactional
 from core.exceptions import BadRequestException, NotFoundException
@@ -17,6 +19,12 @@ class UserController(BaseController[User]):
     def __init__(self, user_repository: UserRepository):
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
+
+    async def get_filtered_user(self, *, filter_params: UserFilterParams) -> PaginationResponse[UserResponse]:
+        users, total = await self.user_repository.get_filtered_users(filter_params=filter_params)
+        return PaginationResponse[UserResponse](
+            limit=filter_params.limit, offset=filter_params.offset, total=total, items=users
+        )
 
     async def get_user(self, *, user_uuid: UUID) -> User:
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
