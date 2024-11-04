@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, status
 
 from app.controllers import UserController
-from app.schemas.extra import UserFilterParams
+from app.schemas.extra import PaginationResponse, UserFilterParams
 from app.schemas.request import RegisterUserRequest, UpdateUserRequest
 from app.schemas.response import UserResponse
 from core.factory import Factory
@@ -17,7 +17,7 @@ user_router = APIRouter()
 async def get_users(
     filter_params: Annotated[UserFilterParams, Query()],
     user_controller: UserController = Depends(Factory().get_user_controller),
-) -> list[UserResponse]:
+) -> PaginationResponse[UserResponse]:
     """
     Retrieve users.
     """
