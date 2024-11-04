@@ -1,8 +1,10 @@
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
 from app.controllers import UserController
+from app.schemas.extra import UserFilterParams
 from app.schemas.request import RegisterUserRequest, UpdateUserRequest
 from app.schemas.response import UserResponse
 from core.factory import Factory
@@ -12,11 +14,14 @@ user_router = APIRouter()
 
 
 @user_router.get("/", dependencies=[Depends(PermissionDependency([IsAdmin]))])
-async def get_users(user_controller: UserController = Depends(Factory().get_user_controller)) -> list[UserResponse]:
+async def get_users(
+    filter_params: Annotated[UserFilterParams, Query()],
+    user_controller: UserController = Depends(Factory().get_user_controller),
+) -> list[UserResponse]:
     """
     Retrieve users.
     """
-    return await user_controller.get_all()
+    return await user_controller.get_filtered_user(filter_params=filter_params)
 
 
 @user_router.get("/{id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
