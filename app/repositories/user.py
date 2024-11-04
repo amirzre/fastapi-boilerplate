@@ -34,12 +34,12 @@ class UserRepository(BaseRepository[User]):
 
         return await self._one_or_none(query)
 
-    async def get_filtered_users(self, filter_params: UserFilterParams) -> list[User] | None:
+    async def get_filtered_users(self, filter_params: UserFilterParams) -> tuple[list[User], int]:
         """
-        Get users by filter.
+        Get users by filter and return the total count.
 
         :param filter_params: user filter parameters.
-        :return: list of users.
+        :return: a tuple of list of users and the total count of matching users.
         """
         query = self._query()
 
@@ -63,6 +63,9 @@ class UserRepository(BaseRepository[User]):
         order_column = User.created if filter_params.order_by == "created" else User.updated
         query = query.order_by(order_column)
 
-        query = query.limit(filter_params.limit).offset(filter_params.offset)
+        paginated_query = query.limit(filter_params.limit).offset(filter_params.offset)
 
-        return await self._all(query=query)
+        users = await self._all(query=paginated_query)
+        total = await self._count(query=query)
+
+        return users, total
