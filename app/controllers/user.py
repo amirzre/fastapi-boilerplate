@@ -2,6 +2,7 @@ from uuid import UUID
 
 from app.models import User
 from app.repositories import UserRepository
+from app.schemas.extra import UserFilterParams
 from app.schemas.request import RegisterUserRequest, UpdateUserRequest
 from core.controller import BaseController
 from core.db import Transactional
@@ -17,6 +18,9 @@ class UserController(BaseController[User]):
     def __init__(self, user_repository: UserRepository):
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
+
+    async def get_filtered_user(self, *, filter_params: UserFilterParams) -> list[User] | None:
+        return await self.user_repository.get_filtered_users(filter_params=filter_params)
 
     async def get_user(self, *, user_uuid: UUID) -> User:
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
