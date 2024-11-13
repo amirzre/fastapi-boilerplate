@@ -20,6 +20,7 @@ class CacheManager:
         tag: CacheTag | None = None,
         ttl: int = 60,
     ):
+        """Decorator to cache data."""
         def _cached(function):
             @wraps(function)
             async def __cached(*args, **kwargs):
@@ -41,6 +42,34 @@ class CacheManager:
             return __cached
 
         return _cached
+
+    def invalidate_by_prefix(self, prefix: str):
+        """Decorator to invalidate cache by prefix."""
+        def _invalidate(function):
+            @wraps(function)
+            async def __invalidate(*args, **kwargs):
+                if not self.backend:
+                    raise Exception("backend is None.")
+                await self.backend.delete_startswith(value=prefix)
+                return await function(*args, **kwargs)
+
+            return __invalidate
+
+        return _invalidate
+
+    def invalidate_by_tag(self, tag: CacheTag):
+        """Decorator to invalidate cache by tag."""
+        def _invalidate(function):
+            @wraps(function)
+            async def __invalidate(*args, **kwargs):
+                if not self.backend:
+                    raise Exception("backend is None.")
+                await self.backend.delete_startswith(value=tag.value)
+                return await function(*args, **kwargs)
+
+            return __invalidate
+
+        return _invalidate
 
     async def remove_by_tag(self, *, tag: CacheTag) -> None:
         await self.backend.delete_startswith(value=tag.value)
