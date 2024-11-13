@@ -1,5 +1,5 @@
 import pickle
-from typing import Any
+from typing import Any, Optional
 from uuid import UUID
 
 import orjson
@@ -10,7 +10,8 @@ from core.redis import redis_client as redis
 
 
 class RedisBackend(BaseBackend):
-    async def get(self, key: str, model: BaseModel = None) -> Any:
+    async def get(self, key: str, model: Optional[type[BaseModel]] = None) -> Any:
+        """Retrieve data from Redis and optionally parse it into a Pydantic model."""
         result = await redis.get(key)
         if not result:
             return
@@ -22,27 +23,33 @@ class RedisBackend(BaseBackend):
             return pickle.loads(result)
 
     async def set(self, response: Any, key: str, ttl: int = 60) -> None:
-        if isinstance(response, BaseModel):
-            data = response.model_dump()
-
-            def convert_uuids(obj):
-                if isinstance(obj, UUID):
-                    return str(obj)
-                elif isinstance(obj, dict):
-                    return {k: convert_uuids(v) for k, v in obj.items()}
-                elif isinstance(obj, list):
-                    return [convert_uuids(i) for i in obj]
-                return obj
-
-            data = convert_uuids(data)
-            response = orjson.dumps(data)
-        elif isinstance(response, dict):
-            response = pickle.dumps(response)
-        else:
-            response = pickle.dumps(response)
-
-        await redis.set(name=key, value=response, ex=ttl)
+        """Store data in Redis, serializing based on response type and setting expiration."""
+        serialized_data = self._serialize_response(response=response)
+        await redis.set(name=key, value=serialized_data, ex=ttl)
 
     async def delete_startswith(self, value: str) -> None:
+        """Delete all keys in Redis that start with a given prefix."""
         async for key in redis.scan_iter(f"{value}::*"):
             await redis.delete(key)
+
+    @staticmethod
+    def _serialize_response(response: BaseModel | dict | Any) -> bytes:
+        """Serialize a response based on its type for Redis storage."""
+        if isinstance(response, BaseModel):
+            data = response.model_dump()
+            data = RedisBackend._convert_uuids(data)
+            return orjson.dumps(data)
+        elif isinstance(response, dict):
+            return pickle.dumps(response)
+        return pickle.dumps(response)
+
+    @staticmethod
+    def _convert_uuids(data: Any) -> Any:
+        """Recursively convert UUIDs to strings in a dictionary or list."""
+        if isinstance(data, UUID):
+            return str(data)
+        elif isinstance(data, dict):
+            return {k: RedisBackend._convert_uuids(v) for k, v in data.items()}
+        elif isinstance(data, list):
+            return [RedisBackend._convert_uuids(item) for item in data]
+        return data
