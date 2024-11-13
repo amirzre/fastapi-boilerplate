@@ -1,7 +1,7 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from pydantic import UUID4
 
 from app.controllers import UserController
 from app.schemas.extra import PaginationResponse, UserFilterParams
@@ -27,13 +27,15 @@ async def get_users(
     return await user_controller.get_filtered_user(filter_params=filter_params)
 
 
-@user_router.get("/{id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+@user_router.get("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 @Cache.cached(prefix=prefix, ttl=60)
-async def get_user(id=UUID, user_controller: UserController = Depends(Factory().get_user_controller)) -> UserResponse:
+async def get_user(
+    user_id: UUID4, user_controller: UserController = Depends(Factory().get_user_controller)
+) -> UserResponse:
     """
     Retrieve user by ID.
     """
-    return await user_controller.get_user(user_uuid=id)
+    return await user_controller.get_user(user_uuid=user_id)
 
 
 @user_router.post("/", status_code=status.HTTP_201_CREATED)
@@ -48,25 +50,27 @@ async def register_user(
     return await user_controller.register_user(register_user_request=register_user_request)
 
 
-@user_router.put("/{id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+@user_router.put("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 @Cache.invalidate_by_prefix(prefix=prefix)
 async def update_user(
-    id: UUID,
+    user_id: UUID4,
     update_user_request: UpdateUserRequest,
     user_controller: UserController = Depends(Factory().get_user_controller),
 ) -> UserResponse:
     """
     Update a user.
     """
-    return await user_controller.update_user(user_uuid=id, update_user_request=update_user_request)
+    return await user_controller.update_user(user_uuid=user_id, update_user_request=update_user_request)
 
 
 @user_router.delete(
-    "/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
+    "/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
 @Cache.invalidate_by_prefix(prefix=prefix)
 async def delete_user(
-    id: UUID,
+    id: UUID4,
     user_controller: UserController = Depends(Factory().get_user_controller),
 ) -> None:
     """
