@@ -37,6 +37,7 @@ async def get_user(id=UUID, user_controller: UserController = Depends(Factory().
 
 
 @user_router.post("/", status_code=status.HTTP_201_CREATED)
+@Cache.invalidate_by_prefix(prefix=prefix)
 async def register_user(
     register_user_request: RegisterUserRequest,
     user_controller: UserController = Depends(Factory().get_user_controller),
@@ -44,11 +45,11 @@ async def register_user(
     """
     Register new user.
     """
-    await Cache.remove_by_prefix(prefix=prefix)
     return await user_controller.register_user(register_user_request=register_user_request)
 
 
 @user_router.put("/{id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+@Cache.invalidate_by_prefix(prefix=prefix)
 async def update_user(
     id: UUID,
     update_user_request: UpdateUserRequest,
@@ -57,13 +58,13 @@ async def update_user(
     """
     Update a user.
     """
-    await Cache.remove_by_prefix(prefix=prefix)
     return await user_controller.update_user(user_uuid=id, update_user_request=update_user_request)
 
 
 @user_router.delete(
     "/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
 )
+@Cache.invalidate_by_prefix(prefix=prefix)
 async def delete_user(
     id: UUID,
     user_controller: UserController = Depends(Factory().get_user_controller),
@@ -71,5 +72,4 @@ async def delete_user(
     """
     Delete a user.
     """
-    await Cache.remove_by_prefix(prefix=prefix)
     return await user_controller.delete_user(user_uuid=id)
