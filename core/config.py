@@ -2,7 +2,7 @@ import json
 from enum import auto
 from secrets import token_urlsafe
 
-from pydantic import AnyHttpUrl, PostgresDsn, RedisDsn, TypeAdapter
+from pydantic import AnyHttpUrl, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from core.enum import StrEnum
@@ -20,9 +20,9 @@ class BaseConfig(BaseSettings):
     @classmethod
     def cros_origins(cls, values):
         """Parse CORS ORIGINS as a JSON list from the env variable."""
-        if isinstance(values.get("CORS_ORIGINS"), str):
-            cors_origins = values["CORS_ORIGINS"]
-            values["CORS_ORIGINS"] = TypeAdapter(list[AnyHttpUrl]).validate_python(json.loads(cors_origins))
+        cors_origins = values.get("CORS_ORIGINS", "")
+        if isinstance(cors_origins, str) and cors_origins:
+            values["CORS_ORIGINS"] = json.loads(cors_origins)
         return values
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="", env_nested_delimiter="__", case_sensitive=True)
@@ -34,9 +34,11 @@ class Config(BaseConfig):
     ENVIRONMENT: EnvironmentType = EnvironmentType.DEVELOPMENT
     WORKERS: int = 1
 
-    POSTGRES_URL: PostgresDsn = "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate"
-    POSTGRES_TEST_URL: PostgresDsn = "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate-test"
-    REDIS_URL: RedisDsn = "redis://localhost:6379/0"
+    POSTGRES_URL: PostgresDsn = PostgresDsn("postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate")
+    POSTGRES_TEST_URL: PostgresDsn = PostgresDsn(
+        "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate-test"
+    )
+    REDIS_URL: RedisDsn = RedisDsn("redis://localhost:6379/0")
 
     SECRET_KEY: str = token_urlsafe(32)
     JWT_ALGORITHM: str = "HS256"

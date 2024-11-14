@@ -46,7 +46,7 @@ def make_middleware() -> list[Middleware]:
     middleware = [
         Middleware(
             CORSMiddleware,
-            allow_origins=[config.CORS_ORIGINS],
+            allow_origins=[str(url) for url in config.CORS_ORIGINS],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
@@ -67,7 +67,7 @@ def create_app() -> FastAPI:
     app_ = FastAPI(
         title=config.APP_TITLE,
         description="FastAPI Boilerplate",
-        version="1.0.0",
+        version=config.RELEASE_VERSION,
         docs_url=None if config.ENVIRONMENT == "production" else "/docs",
         redoc_url=None if config.ENVIRONMENT == "production" else "/redoc",
         dependencies=[Depends(Logging)],
