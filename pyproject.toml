@@ -16,6 +16,7 @@ pydantic-settings = "^2.5.2"
 pyjwt = "^2.9.0"
 asyncpg = "^0.29.0"
 orjson = "^3.10.11"
+bcrypt = "^4.2.0"
 
 
 [tool.poetry.group.dev]
