@@ -1,18 +1,19 @@
 from datetime import datetime, timedelta, timezone
 
 import jwt
+from fastapi import status
 
 from core.config import config
 from core.exceptions import CustomException
 
 
 class JWTDecodeError(CustomException):
-    code = 401
+    code = status.HTTP_401_UNAUTHORIZED
     message = "Invalid token."
 
 
 class JWTExpiredError(CustomException):
-    code: 401
+    code = status.HTTP_401_UNAUTHORIZED
     message = "Token expired."
 
 
