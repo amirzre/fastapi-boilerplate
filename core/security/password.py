@@ -1,18 +1,11 @@
-from passlib.context import CryptContext
-from passlib.handlers.bcrypt import bcrypt
+import bcrypt
 
 
 class PasswordHandler:
-    pwd_context = CryptContext(
-        schemes=["bcrypt"],
-        deprecated="auto",
-    )
-
     @staticmethod
     def hash(password: str) -> str:
-        return PasswordHandler.pwd_context.hash(password)
+        return bcrypt.hashpw(password=password.encode(), salt=bcrypt.gensalt()).decode()
 
     @staticmethod
-    def verify(hashed_password: str, plain_password: str) -> bool:
-        normalized_hash = bcrypt.normhash(hashed_password)
-        return PasswordHandler.pwd_context.verify(plain_password, normalized_hash)
+    def verify(plain_password: str, hashed_password: str) -> bool:
+        return bcrypt.checkpw(password=plain_password.encode(), hashed_password=hashed_password.encode())
