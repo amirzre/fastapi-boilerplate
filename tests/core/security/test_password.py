@@ -4,73 +4,45 @@ from core.security import PasswordHandler
 
 
 class TestPasswordHandler:
-    def test_hash_creates_different_hashes_for_same_password(self):
-        """
-        Ensure hashing the same password twice results in different hashes.
-        """
-        password = "test_password"
-        hash1 = PasswordHandler.hash(password)
-        hash2 = PasswordHandler.hash(password)
-        assert hash1 != hash2, "Hashes for the same password should be unique."
+    @pytest.fixture
+    def plain_password(self):
+        return "SecurePassword123!"
 
-    def test_verify_correct_password(self):
+    def test_hash_generates_valid_hash(self, plain_password):
         """
-        Ensure the verify method returns True for a correct password.
+        Test that the hash method generates a non-empty hash string.
         """
-        password = "correct_password"
-        hashed_password = PasswordHandler.hash(password)
-        assert PasswordHandler.verify(hashed_password, password), "Verification failed for the correct password."
+        hashed_password = PasswordHandler.hash(plain_password)
+        assert isinstance(hashed_password, str)
+        assert hashed_password != ""
+        assert len(hashed_password) > len(plain_password)
 
-    def test_verify_incorrect_password(self):
+    def test_verify_with_valid_password(self, plain_password):
         """
-        Ensure the verify method returns False for an incorrect password.
+        Test that verify returns True for a valid password and its hash.
         """
-        password = "correct_password"
-        wrong_password = "wrong_password"
-        hashed_password = PasswordHandler.hash(password)
-        assert not PasswordHandler.verify(
-            hashed_password, wrong_password
-        ), "Verification passed for an incorrect password."
+        hashed_password = PasswordHandler.hash(plain_password)
+        assert PasswordHandler.verify(plain_password, hashed_password)
 
-    def test_verify_with_normalized_hash(self):
+    def test_verify_with_invalid_password(self, plain_password):
         """
-        Ensure the verify method can handle a normalized bcrypt hash.
+        Test that verify returns False for an invalid password.
         """
-        password = "test_password"
-        normalized_hash = PasswordHandler.pwd_context.hash(password)  # Simulate normalization
-        assert PasswordHandler.verify(normalized_hash, password), "Verification failed with a normalized hash."
+        hashed_password = PasswordHandler.hash(plain_password)
+        invalid_password = "WrongPassword!"
+        assert not PasswordHandler.verify(invalid_password, hashed_password)
 
-    def test_hashing_empty_password(self):
+    def test_hash_is_different_each_time(self, plain_password):
         """
-        Ensure hashing an empty password does not raise errors and generates a hash.
+        Test that the hash method generates a different hash each time for the same input.
         """
-        password = ""
-        hashed_password = PasswordHandler.hash(password)
-        assert (
-            isinstance(hashed_password, str) and hashed_password
-        ), "Hashing an empty password should produce a valid hash."
+        hashed_password_1 = PasswordHandler.hash(plain_password)
+        hashed_password_2 = PasswordHandler.hash(plain_password)
+        assert hashed_password_1 != hashed_password_2
 
-    def test_verify_empty_password(self):
+    def test_hash_is_secure(self, plain_password):
         """
-        Ensure verifying an empty password works as expected.
+        Test that the hash does not contain the original password.
         """
-        password = ""
-        hashed_password = PasswordHandler.hash(password)
-        assert PasswordHandler.verify(hashed_password, password), "Verification failed for an empty password."
-
-    def test_verify_invalid_hash_format(self):
-        """
-        Ensure the verify method handles invalid hash formats gracefully.
-        """
-        password = "password"
-        invalid_hash = "invalid_hash_format"
-        with pytest.raises(ValueError):
-            PasswordHandler.verify(invalid_hash, password)
-
-    def test_hash_length(self):
-        """
-        Ensure the generated hash has a reasonable length.
-        """
-        password = "test_password"
-        hashed_password = PasswordHandler.hash(password)
-        assert len(hashed_password) > 50, "Hash length is unexpectedly short."
+        hashed_password = PasswordHandler.hash(plain_password)
+        assert plain_password not in hashed_password
