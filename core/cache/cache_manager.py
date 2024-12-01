@@ -21,6 +21,7 @@ class CacheManager:
         ttl: int = 60,
     ):
         """Decorator to cache data."""
+
         def _cached(function):
             @wraps(function)
             async def __cached(*args, **kwargs):
@@ -45,6 +46,7 @@ class CacheManager:
 
     def invalidate_by_prefix(self, prefix: str):
         """Decorator to invalidate cache by prefix."""
+
         def _invalidate(function):
             @wraps(function)
             async def __invalidate(*args, **kwargs):
@@ -59,6 +61,7 @@ class CacheManager:
 
     def invalidate_by_tag(self, tag: CacheTag):
         """Decorator to invalidate cache by tag."""
+
         def _invalidate(function):
             @wraps(function)
             async def __invalidate(*args, **kwargs):
