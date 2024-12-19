@@ -93,7 +93,14 @@ async def me(user: User = Depends(get_current_user)) -> UserResponse:
     """
     Retrieve current user information.
     """
-    return user
+    return UserResponse(
+        uuid=user.uuid,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        role=user.role,
+        activated=user.activated,
+    )
 
 
 @auth_router.delete("/logout", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_authenticated_user)])
