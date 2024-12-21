@@ -20,5 +20,5 @@ class User(Base, IDUUIDMixin, TimestampMixin):
     first_name: Mapped[str] = mapped_column(String(50), nullable=True)
     last_name: Mapped[str] = mapped_column(String(50), nullable=True)
     password: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[Enum] = mapped_column(Enum(UserRole), default=UserRole.USER, nullable=False)
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.USER, nullable=False)
     activated: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
