@@ -25,7 +25,7 @@ class AuthController(BaseController[User]):
         user = await self.user_repository.get_by_email(email=login_user_request.email)
         if not user:
             raise BadRequestException(message="Invalid credentials.")
-        if not PasswordHandler.verify(user.password, login_user_request.password):
+        if not PasswordHandler.verify(plain_password=login_user_request.password, hashed_password=user.password):
             raise BadRequestException(message="Invalid credentials.")
         if user.activated is False:
             raise BadRequestException(message="The user is inactive.")
