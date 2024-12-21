@@ -50,7 +50,7 @@ async def register_admin_user(client: AsyncClient) -> dict:
         email=fake.email(),
         first_name=fake.first_name(),
         last_name=fake.last_name(),
-        password=fake.password(),
+        password="Password@123",
         role=UserRole.ADMIN,
         activated=True,
     )
@@ -67,7 +67,7 @@ async def register_normal_user(client: AsyncClient) -> dict:
         email=fake.email(),
         first_name=fake.first_name(),
         last_name=fake.last_name(),
-        password=fake.password(),
+        password="Password@123",
         role=UserRole.USER,
         activated=True,
     )
