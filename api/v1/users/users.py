@@ -70,10 +70,10 @@ async def update_user(
 )
 @Cache.invalidate_by_prefix(prefix=prefix)
 async def delete_user(
-    id: UUID4,
+    user_id: UUID4,
     user_controller: UserController = Depends(Factory().get_user_controller),
 ) -> None:
     """
     Delete a user.
     """
-    return await user_controller.delete_user(user_uuid=id)
+    return await user_controller.delete_user(user_uuid=user_id)
