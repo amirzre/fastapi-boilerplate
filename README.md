@@ -1,46 +1,73 @@
-# fastapi-postgres-boilerplate
-This project template which uses FastAPi, Alembic, SQLAlchemy as ORM, Rocketry as scheduler, Celery as async task manager with Rabittmq. It shows a complete async CRUD template. Also I setup cache app with invalidate feature with Redis.
+<h1 align="center"> FastAPI Boilerplate </h1>
+<p align="center" markdown=1>
+  <i>Template to speed your FastAPI development up.</i>
+</p>
+
+<p align="center">
+  <a href="https://python.org/">
+      <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  </a>
+  <a href="https://fastapi.tiangolo.com">
+      <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI">
+  </a>
+  <a href="https://docs.pydantic.dev/">
+      <img src="https://img.shields.io/badge/Pydantic-E92063?logo=pydantic&logoColor=fff&style=for-the-badge" alt="Pydantic">
+  </a>
+  <a href="https://www.postgresql.org">
+      <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  </a>
+  <a href="https://redis.io">
+      <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=fff&style=for-the-badge" alt="Redis">
+  </a>
+  <a href="https://docs.docker.com/compose/">
+      <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff&style=for-the-badge" alt="Docker">
+  </a>
+</p>
 
 
-## Set environment variables
+## Introduction
 
-Create an **.env** file on root folder and copy the content from **.env.example**. Feel free to change it according to your own configuration.
-
-## Development guide:
-
-### Run the project using Docker containers and forcing build containers
-
-###  Project structure description:
-**docker-compose-dev.yml**: a container for postgres and redis services
-- When you want to build the project you should use this file to have dockerized postgres and redis attached to the project.
-- To build and run postgres and redis should use this command: 
-```dockerfile
-docker-compose -f docker-compose-dev.yml up -d --build 
-```
-#### Hint:
-If you get some errors like 'port already in use' for postgres or redis you can change the external port.
-
-**docker-compose.yml**:
-- Main docker-compose file for building service.For running container after  building postgres and redis 
-you should run the following command : 
-```dockerfile
-docker-compose up -d --build
-```
-
-## Cache
-If you want to use cache in your project, it is better to read it's documentation first:
-[cache document](/app/cache/cache-doc.md)
+This project, **FastAPI Boilerplate**, is designed to provide a robust and scalable starting point for building modern web applications. It integrates essential tools and best practices to help developers quickly set up a project with minimal effort.
 
 
-## TODO List:
-- [x] Add Custom Exception handler
-- [ ] Add jsonb field on table sample
-- [x] Add docstrings
-- [x] Add Custom Response model
-- [ ] Create sample one to many relationship
-- [ ] Create sample many to many relationship
-- [x] Add Black formatter and flake8 lint
-- [ ] Add export report api in csv/xlsx files using StreamingResponse
-- [ ] Convert repo into template using cookiecutter
-- [x] Add tests for APIs
-- [x] Add websocket sample
+## About
+
+The boilerplate includes:
+
+- [`FastAPI`](https://fastapi.tiangolo.com): modern Python web framework for building APIs.
+- [`Pydantic V2`](https://docs.pydantic.dev/2.4/): the most widely used data Python validation library, rewritten in Rust.
+- [`SQLAlchemy V2`](https://docs.sqlalchemy.org/en/20/changelog/whatsnew_20.html): Python SQL toolkit and Object Relational Mapper.
+- [`PostgreSQL`](https://www.postgresql.org): The World's Most Advanced Open Source Relational Database.
+- [`Redis`](https://redis.io): Open source, in-memory data store used by millions as a cache, message broker and more.
+- [`Docker Compose`](https://docs.docker.com/compose/) With a single command, create and start all the services from your configuration.
+
+This setup is perfect for developers looking to start their project with a solid foundation that is maintainable and easy to extend.
+
+
+## Features
+
+- ⚡️ Fully async
+- 🚀 Pydantic V2 and SQLAlchemy V2
+- 🔐 User authentication with JWT
+- 🍪 Cookie based access and refresh token
+- 🏬 Easy redis caching
+- ⚙️ Efficient and robust queries with **SQLAlchemy**
+- ⎘ Offset and cursor pagination support
+- 🦾 Easily extendable
+- 🤸‍♂️ Flexible
+- 🚚 Easy running with docker compose
+
+
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [About](#about)
+3. [Features](#features)
+<!-- 5. [Project Structure](#project-structure)  
+6. [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Running the Application](#running-the-application)
+ 
+7. [Contributing](#contributing)
+8. [License](#license) -->
