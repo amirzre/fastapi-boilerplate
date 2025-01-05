@@ -10,6 +10,7 @@ from app.schemas.response import UserResponse
 from core.cache import Cache
 from core.factory import Factory
 from core.fastapi.dependencies import IsAdmin, IsAuthenticated, PermissionDependency
+from core.responses import APIResponse, APIResponseType
 
 user_router = APIRouter()
 prefix = "users"
@@ -20,22 +21,24 @@ prefix = "users"
 async def get_users(
     filter_params: Annotated[UserFilterParams, Query()],
     user_controller: UserController = Depends(Factory().get_user_controller),
-) -> PaginationResponse[UserResponse]:
+) -> APIResponseType[PaginationResponse[UserResponse]]:
     """
     Retrieve users.
     """
-    return await user_controller.get_filtered_user(filter_params=filter_params)
+    users = await user_controller.get_filtered_user(filter_params=filter_params)
+    return APIResponse(users)
 
 
 @user_router.get("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 @Cache.cached(prefix=prefix, ttl=60)
 async def get_user(
     user_id: UUID4, user_controller: UserController = Depends(Factory().get_user_controller)
-) -> UserResponse:
+) -> APIResponseType[UserResponse]:
     """
     Retrieve user by ID.
     """
-    return await user_controller.get_user(user_uuid=user_id)
+    user = await user_controller.get_user(user_uuid=user_id)
+    return APIResponse(user)
 
 
 @user_router.post("/", status_code=status.HTTP_201_CREATED)
@@ -43,11 +46,12 @@ async def get_user(
 async def register_user(
     register_user_request: RegisterUserRequest,
     user_controller: UserController = Depends(Factory().get_user_controller),
-) -> UserResponse:
+) -> APIResponseType[UserResponse]:
     """
     Register new user.
     """
-    return await user_controller.register_user(register_user_request=register_user_request)
+    user = await user_controller.register_user(register_user_request=register_user_request)
+    return APIResponse(user)
 
 
 @user_router.put("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
@@ -56,11 +60,12 @@ async def update_user(
     user_id: UUID4,
     update_user_request: UpdateUserRequest,
     user_controller: UserController = Depends(Factory().get_user_controller),
-) -> UserResponse:
+) -> APIResponseType[UserResponse]:
     """
     Update a user.
     """
-    return await user_controller.update_user(user_uuid=user_id, update_user_request=update_user_request)
+    user = await user_controller.update_user(user_uuid=user_id, update_user_request=update_user_request)
+    return APIResponse(user)
 
 
 @user_router.delete(

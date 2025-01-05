@@ -12,6 +12,7 @@ from core.fastapi.dependencies import (
     get_current_user,
     get_current_user_with_refresh_token,
 )
+from core.responses import APIResponse, APIResponseType
 from core.security import JWTHandler
 
 auth_router = APIRouter()
@@ -89,11 +90,11 @@ async def refresh_token(
 
 
 @auth_router.get("/me", status_code=status.HTTP_200_OK)
-async def me(user: User = Depends(get_current_user)) -> UserResponse:
+async def me(user: User = Depends(get_current_user)) -> APIResponseType[UserResponse]:
     """
     Retrieve current user information.
     """
-    return UserResponse(
+    user = UserResponse(
         uuid=user.uuid,
         email=user.email,
         first_name=user.first_name,
@@ -101,6 +102,7 @@ async def me(user: User = Depends(get_current_user)) -> UserResponse:
         role=user.role,
         activated=user.activated,
     )
+    return APIResponse(user)
 
 
 @auth_router.delete("/logout", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_authenticated_user)])
