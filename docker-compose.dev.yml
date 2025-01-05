@@ -54,7 +54,6 @@ services:
       - RABBITMQ_DEFAULT_USER=rabbit
       - RABBITMQ_DEFAULT_PASS=password
 
-
 volumes:
   postgres-data:
   postgres-test-data:

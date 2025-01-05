@@ -16,6 +16,7 @@ fake = Faker()
 class TestUserEndpoints:
     @pytest_asyncio.fixture
     async def test_user(self, client: AsyncClient) -> dict:
+        """Fixture to create a test user in the system."""
         user_data = {
             "email": fake.email(),
             "password": "Password@123",
@@ -26,19 +27,21 @@ class TestUserEndpoints:
         }
         response = await client.post("/api/v1/users/", json=user_data)
         assert response.status_code == status.HTTP_201_CREATED
-        return response.json()
+        return response.json().get("content")
 
     async def test_get_all_users(self, client: AsyncClient, admin_auth_token: tuple[str, str]):
+        """Test retrieving all users as an admin."""
         access_token, _ = admin_auth_token
 
         client.cookies.set(name="Access-Token", value=access_token)
         response = await client.get("/api/v1/users/")
 
         assert response.status_code == status.HTTP_200_OK
-        users = response.json()
+        users = response.json().get("content")
         assert isinstance(users["items"], list)
 
     async def test_get_all_users_non_admin(self, client: AsyncClient, user_auth_token: tuple[str, str]):
+        """Test retrieving all users as a non-admin user."""
         access_token, _ = user_auth_token
 
         client.cookies.set(name="Access-Token", value=access_token)
@@ -47,11 +50,13 @@ class TestUserEndpoints:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_get_all_users_unauthorized(self, client: AsyncClient):
+        """Test retrieving all users without authentication."""
         response = await client.get("/api/v1/users/")
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_get_user_by_id(self, client: AsyncClient, admin_auth_token: tuple[str, str], test_user: dict):
+        """Test retrieving a user by their UUID as an admin."""
         access_token, _ = admin_auth_token
         user_uuid = test_user["uuid"]
 
@@ -59,10 +64,11 @@ class TestUserEndpoints:
         response = await client.get(f"/api/v1/users/{user_uuid}")
 
         assert response.status_code == status.HTTP_200_OK
-        user_data = response.json()
+        user_data = response.json().get("content")
         assert user_data["uuid"] == user_uuid
 
     async def test_register_new_user(self, client: AsyncClient):
+        """Test registering a new user."""
         new_user = RegisterUserRequest(
             email="test@email.com",
             first_name="User",
@@ -74,12 +80,13 @@ class TestUserEndpoints:
         response = await client.post("/api/v1/users/", json=new_user.model_dump())
 
         assert response.status_code == status.HTTP_201_CREATED
-        user = response.json()
+        user = response.json().get("content")
         assert user["email"] == "test@email.com"
         assert user["first_name"] == "User"
         assert user["last_name"] == "test"
 
     async def test_register_duplicate_user(self, client: AsyncClient):
+        """Test registering a user with an email that already exists."""
         user1 = RegisterUserRequest(
             email="test@email.com",
             first_name="User",
@@ -103,6 +110,7 @@ class TestUserEndpoints:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     async def test_update_user(self, client: AsyncClient, user_auth_token: tuple[str, str], test_user: dict):
+        """Test updating an existing user."""
         access_token, _ = user_auth_token
         user_uuid = test_user["uuid"]
         updated_user_data = UpdateUserRequest(
@@ -116,12 +124,13 @@ class TestUserEndpoints:
         response = await client.put(f"/api/v1/users/{user_uuid}", json=updated_user_data.model_dump())
         assert response.status_code == status.HTTP_200_OK
 
-        updated_user = response.json()
+        updated_user = response.json().get("content")
         assert updated_user["email"] == "updated_email@example.com"
         assert updated_user["first_name"] == "UpdatedFirstName"
         assert updated_user["last_name"] == "UpdatedLastName"
 
     async def test_update_non_existent_user(self, client: AsyncClient, user_auth_token: tuple[str, str]):
+        """Test updating a non-existent user."""
         access_token, _ = user_auth_token
         non_existent_uuid = uuid4()
         updated_user_data = {
@@ -137,6 +146,7 @@ class TestUserEndpoints:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     async def test_delete_user(self, client: AsyncClient, user_auth_token: tuple[str, str], test_user: dict):
+        """Test deleting an existing user."""
         access_token, _ = user_auth_token
         user_uuid = test_user["uuid"]
 
@@ -146,6 +156,7 @@ class TestUserEndpoints:
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_delete_non_existent_user(self, client: AsyncClient, user_auth_token: tuple[str, str]):
+        """Test deleting a non-existent user."""
         access_token, _ = user_auth_token
         non_existent_uuid = uuid4()
 
