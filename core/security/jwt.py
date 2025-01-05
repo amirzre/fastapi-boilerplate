@@ -9,11 +9,13 @@ from core.exceptions import CustomException
 
 class JWTDecodeError(CustomException):
     code = status.HTTP_401_UNAUTHORIZED
+    error_code = status.HTTP_401_UNAUTHORIZED
     message = "Invalid token."
 
 
 class JWTExpiredError(CustomException):
     code = status.HTTP_401_UNAUTHORIZED
+    error_code = status.HTTP_401_UNAUTHORIZED
     message = "Token expired."
 
 

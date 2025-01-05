@@ -11,13 +11,13 @@ from core.exceptions import CustomException
 
 class UnauthorizedException(CustomException):
     code = status.HTTP_401_UNAUTHORIZED
-    error_code = "UNAUTHORIZED"
+    error_code = status.HTTP_401_UNAUTHORIZED
     message = "You are not authorized to access this resource."
 
 
 class ForbiddenException(CustomException):
     code = status.HTTP_403_FORBIDDEN
-    error_code = "FORBIDDEN"
+    error_code = status.HTTP_403_FORBIDDEN
     message = "You do not have permission to perform this action."
 
 
