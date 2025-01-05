@@ -1,7 +1,7 @@
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from api import router
 from core.cache import Cache, CustomKeyMaker, RedisBackend
@@ -14,18 +14,22 @@ from core.fastapi.middlewares import (
     SessionMiddleware,
     SQLAlchemyMiddleware,
 )
+from core.responses import ResponseStatus
 
 
 def on_auth_error(request: Request, exc: Exception):
-    status_code, error_code, message = 401, None, str(exc)
+    status_code, error_code, message = status.HTTP_401_UNAUTHORIZED, None, str(exc)
     if isinstance(exc, CustomException):
         status_code = int(exc.code)
         error_code = exc.error_code
         message = exc.message
 
-    return JSONResponse(
+    return ORJSONResponse(
         status_code=status_code,
-        content={"error_code": error_code, "message": message},
+        content={
+            "header": {"status": ResponseStatus.FAILURE, "message": message, "code": error_code},
+            "content": None,
+        },
     )
 
 
@@ -36,9 +40,12 @@ def init_routers(app_: FastAPI) -> None:
 def init_listeners(app_: FastAPI) -> None:
     @app_.exception_handler(CustomException)
     async def custom_exception_handler(request: Request, exc: CustomException):
-        return JSONResponse(
+        return ORJSONResponse(
             status_code=exc.code,
-            content={"error_code": exc.error_code, "message": exc.message},
+            content={
+                "header": {"status": ResponseStatus.FAILURE, "message": exc.message, "code": exc.error_code},
+                "content": None,
+            },
         )
 
 
