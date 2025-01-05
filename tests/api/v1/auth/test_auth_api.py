@@ -50,7 +50,7 @@ class TestAuthEndpoints:
         response = await client.get("/api/v1/auth/me")
 
         assert response.status_code == status.HTTP_200_OK
-        user_data = response.json()
+        user_data = response.json().get("content")
         assert "email" in user_data
 
     async def test_me_unauthorized(self, client: AsyncClient):

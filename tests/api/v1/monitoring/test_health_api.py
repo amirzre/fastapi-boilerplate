@@ -1,10 +1,10 @@
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
 from httpx import AsyncClient
 
 from app.schemas.response import HealthCheckResponse
 from core.fastapi.dependencies import get_health_check
-
 
 
 @pytest.mark.asyncio
@@ -34,7 +34,7 @@ class TestHealthCheckEndpoint:
         response = await client.get("/api/v1/health/")
 
         assert response.status_code == 200
-        assert response.json() == {"database": True, "redis": True}
+        assert response.json().get("content") == {"database": True, "redis": True}
 
     async def test_health_check_database_down(self, client: AsyncClient, override_health_check_dependency):
         """
@@ -45,7 +45,7 @@ class TestHealthCheckEndpoint:
         response = await client.get("/api/v1/health/")
 
         assert response.status_code == 200
-        assert response.json() == {"database": False, "redis": True}
+        assert response.json().get("content") == {"database": False, "redis": True}
 
     async def test_health_check_redis_down(self, client: AsyncClient, override_health_check_dependency):
         """
@@ -56,7 +56,7 @@ class TestHealthCheckEndpoint:
         response = await client.get("/api/v1/health/")
 
         assert response.status_code == 200
-        assert response.json() == {"database": True, "redis": False}
+        assert response.json().get("content") == {"database": True, "redis": False}
 
     async def test_health_check_all_services_down(self, client: AsyncClient, override_health_check_dependency):
         """
@@ -67,4 +67,4 @@ class TestHealthCheckEndpoint:
         response = await client.get("/api/v1/health/")
 
         assert response.status_code == 200
-        assert response.json() == {"database": False, "redis": False}
+        assert response.json().get("content") == {"database": False, "redis": False}
