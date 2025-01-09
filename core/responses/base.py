@@ -4,6 +4,8 @@ from typing import Generic, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
+from core.i18n import translate as _
+
 T = TypeVar("T")
 
 
@@ -16,7 +18,7 @@ class APIResponseHeader(BaseModel):
     """Header type for API responses."""
 
     status: ResponseStatus = Field(default=ResponseStatus.SUCCESS)
-    message: str = Field(default="Operation completed successfully.")
+    message: str = Field(default=_("Operation completed successfully."))
     code: int = Field(default=HTTPStatus.OK)
 
 
@@ -36,7 +38,7 @@ class APIResponse(APIResponseType[T], Generic[T]):
         super().__init__(
             header=APIResponseHeader(
                 status=ResponseStatus.SUCCESS,
-                message="Operation completed successfully.",
+                message=_("Operation completed successfully."),
                 code=HTTPStatus.OK,
             ),
             content=data,
