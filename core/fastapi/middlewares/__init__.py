@@ -1,4 +1,5 @@
 from .authentication import AuthenticationMiddleware
+from .language import LanguageMiddleware
 from .response_logger import ResponseLoggerMiddleware
 from .session import SessionMiddleware
 from .sqlalchemy import SQLAlchemyMiddleware
@@ -8,4 +9,5 @@ __all__ = [
     "ResponseLoggerMiddleware",
     "SessionMiddleware",
     "AuthenticationMiddleware",
+    "LanguageMiddleware",
 ]
