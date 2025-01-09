@@ -3,6 +3,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import Response
 
 from core.exceptions import UnauthorizedException
+from core.i18n import translate as _
 from core.security import JWTHandler
 
 
@@ -18,9 +19,9 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
                 if user_uuid and user_role:
                     request.state.user = {"uuid": user_uuid, "role": user_role}
                 else:
-                    raise UnauthorizedException("Invalid token.")
+                    raise UnauthorizedException(message=_("Invalid token."))
             except Exception as e:
-                raise UnauthorizedException(f"Authentication failed: {str(e)}")
+                raise UnauthorizedException(message=_(f"Authentication failed: {str(e)}"))
         else:
             request.state.user = None
 
