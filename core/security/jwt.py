@@ -5,18 +5,19 @@ from fastapi import status
 
 from core.config import config
 from core.exceptions import CustomException
+from core.i18n import translate as _
 
 
 class JWTDecodeError(CustomException):
     code = status.HTTP_401_UNAUTHORIZED
     error_code = status.HTTP_401_UNAUTHORIZED
-    message = "Invalid token."
+    message = _("Invalid token.")
 
 
 class JWTExpiredError(CustomException):
     code = status.HTTP_401_UNAUTHORIZED
     error_code = status.HTTP_401_UNAUTHORIZED
-    message = "Token expired."
+    message = _("Token expired.")
 
 
 class JWTHandler:
