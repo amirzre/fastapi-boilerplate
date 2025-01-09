@@ -10,6 +10,7 @@ from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
     AuthenticationMiddleware,
+    LanguageMiddleware,
     ResponseLoggerMiddleware,
     SessionMiddleware,
     SQLAlchemyMiddleware,
@@ -61,6 +62,7 @@ def make_middleware() -> list[Middleware]:
         Middleware(SessionMiddleware),
         Middleware(AuthenticationMiddleware),
         Middleware(SQLAlchemyMiddleware),
+        Middleware(LanguageMiddleware),
         Middleware(ResponseLoggerMiddleware),
     ]
     return middleware

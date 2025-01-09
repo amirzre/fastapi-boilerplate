@@ -17,6 +17,7 @@ pyjwt = "^2.9.0"
 asyncpg = "^0.29.0"
 orjson = "^3.10.11"
 bcrypt = "^4.2.0"
+babel = "^2.16.0"
 
 
 [tool.poetry.group.dev]

@@ -4,6 +4,7 @@ from typing import Annotated
 from pydantic import AfterValidator
 
 from core.exceptions import BadRequestException
+from core.i18n import translate as _
 
 
 def validate_password(value: str) -> str:
@@ -12,7 +13,9 @@ def validate_password(value: str) -> str:
 
     if not password_pattern.match(value):
         raise BadRequestException(
-            message="Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character."
+            message=_(
+                "Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character."
+            )
         )
 
     return value

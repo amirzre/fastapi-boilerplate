@@ -9,6 +9,7 @@ from app.schemas.extra import Token
 from app.schemas.request import UserLoginRequest
 from core.controller import BaseController
 from core.exceptions import BadRequestException, NotFoundException, UnauthorizedException
+from core.i18n import translate as _
 from core.security import JWTHandler, PasswordHandler
 
 
@@ -24,11 +25,11 @@ class AuthController(BaseController[User]):
     async def login(self, *, login_user_request: UserLoginRequest, cache: client.Redis) -> Token:
         user = await self.user_repository.get_by_email(email=login_user_request.email)
         if not user:
-            raise BadRequestException(message="Invalid credentials.")
+            raise BadRequestException(message=_("Invalid credentials."))
         if not PasswordHandler.verify(plain_password=login_user_request.password, hashed_password=user.password):
-            raise BadRequestException(message="Invalid credentials.")
+            raise BadRequestException(message=_("Invalid credentials."))
         if user.activated is False:
-            raise BadRequestException(message="The user is inactive.")
+            raise BadRequestException(message=_("The user is inactive."))
 
         refresh_token = JWTHandler.encode_refresh_token(
             payload={"sub": "refresh_token", "verify": str(user.uuid), "role": user.role}
@@ -43,11 +44,11 @@ class AuthController(BaseController[User]):
     async def refresh_token(self, *, old_refresh_token: str, session_id: str, cache: client.Redis) -> Token:
         uuid, ttl = await asyncio.gather(cache.get(old_refresh_token), cache.ttl(old_refresh_token))
         if not uuid or not session_id:
-            raise UnauthorizedException(message="Invalid token or missing session ID.")
+            raise UnauthorizedException(message=_("Invalid token or missing session ID."))
 
         user = await self.user_repository.get_by_uuid(uuid=uuid)
         if not user:
-            raise NotFoundException(message="User not found.")
+            raise NotFoundException(message=_("User not found."))
 
         access_token = JWTHandler.encode(payload={"uuid": str(uuid), "role": user.role})
         refresh_token = JWTHandler.encode_refresh_token(
@@ -61,6 +62,6 @@ class AuthController(BaseController[User]):
 
     async def logout(self, *, refresh_token: str, cache: client.Redis) -> None:
         if not refresh_token:
-            raise NotFoundException(message="Refresh token not found.")
+            raise NotFoundException(message=_("Refresh token not found."))
         await cache.delete(refresh_token)
         return None
