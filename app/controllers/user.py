@@ -8,6 +8,7 @@ from app.schemas.response import UserResponse
 from core.controller import BaseController
 from core.db import Transactional
 from core.exceptions import BadRequestException, NotFoundException
+from core.i18n import translate as _
 from core.security import PasswordHandler
 
 
@@ -29,7 +30,7 @@ class UserController(BaseController[User]):
     async def get_user(self, *, user_uuid: UUID4) -> UserResponse:
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
-            raise NotFoundException(message="User not found.")
+            raise NotFoundException(message=_("User not found."))
         return UserResponse(
             uuid=user.uuid,
             email=user.email,
@@ -43,7 +44,7 @@ class UserController(BaseController[User]):
     async def register_user(self, *, register_user_request: RegisterUserRequest) -> UserResponse:
         user = await self.user_repository.get_by_email(email=register_user_request.email)
         if user:
-            raise BadRequestException(message="User already exists with this email.")
+            raise BadRequestException(message=_("User already exists with this email."))
 
         hashed_password = PasswordHandler.hash(password=register_user_request.password)
 
@@ -63,7 +64,7 @@ class UserController(BaseController[User]):
     async def update_user(self, *, user_uuid: UUID4, update_user_request: UpdateUserRequest) -> UserResponse:
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
-            raise NotFoundException(message="User not found.")
+            raise NotFoundException(message=_("User not found."))
 
         update_data = update_user_request.model_dump(exclude_unset=True)
         new_password = update_data.get("password")
@@ -83,6 +84,6 @@ class UserController(BaseController[User]):
     async def delete_user(self, *, user_uuid: UUID4) -> None:
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
-            raise NotFoundException(message="User not found.")
+            raise NotFoundException(message=_("User not found."))
 
         return await self.user_repository.delete(model=user)
