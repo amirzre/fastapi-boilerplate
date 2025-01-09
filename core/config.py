@@ -1,5 +1,6 @@
 import json
 from enum import auto
+from pathlib import Path
 from secrets import token_urlsafe
 
 from pydantic import AnyHttpUrl, PostgresDsn, RedisDsn
@@ -15,6 +16,7 @@ class EnvironmentType(StrEnum):
 
 
 class BaseConfig(BaseSettings):
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent
     CORS_ORIGINS: list[AnyHttpUrl] = []
 
     @classmethod
