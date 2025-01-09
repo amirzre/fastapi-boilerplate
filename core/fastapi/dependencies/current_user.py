@@ -7,8 +7,8 @@ from app.controllers import UserController
 from app.models import User
 from core.exceptions import BadRequestException
 from core.factory import Factory
-
 from core.fastapi.dependencies import AuthenticationHandler
+from core.i18n import translate as _
 
 
 async def get_authenticated_user(
@@ -27,7 +27,7 @@ async def get_current_user(
     user_uuid = await handler.authenticate_user(token_type="Access", key="uuid", credentials=token)
     user = await user_controller.get_by_uuid(uuid=user_uuid)
     if user.activated is False:
-        raise BadRequestException(message="The user is inactive.")
+        raise BadRequestException(message=_("The user is inactive."))
     return user
 
 
