@@ -105,3 +105,18 @@ def translate(message: str) -> str:
     """
     translation_wrapper = TranslationWrapper()
     return translation_wrapper.gettext(message)
+
+
+def translate_with_variables(message: str, **kwargs) -> str:
+    """
+    Translate a message and format it with dynamic variables.
+
+    Args:
+        message (str): The base message with placeholders (e.g., "Hello, {name}!").
+        **kwargs: Key-value pairs for the placeholders in the message.
+
+    Returns:
+        str: The translated and formatted message.
+    """
+    translated_message = translate(message=message)
+    return translated_message.format(**kwargs)
