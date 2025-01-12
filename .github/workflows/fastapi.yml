@@ -3,7 +3,8 @@ name: FastAPI CI
 on:
   push:
     branches: ["main", "development"]
-
+  pull_request:
+    branches: ["main", "development"]
 
 jobs:
   test:
@@ -12,6 +13,31 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
     
+    services:
+      db:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+      
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +54,30 @@ jobs:
           poetry install
           poetry install --with dev
 
+      - name: Wait for Database
+        run: |
+          echo "Waiting for database to be ready..."
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            sleep 1
+          done
+        env:
+          PGUSER: postgres
+          PGPASSWORD: postgres
+
+      - name: Set up Test Database
+        run: |
+          psql -h localhost -U postgres -d test_db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+        env:
+          PGUSER: postgres
+          PGPASSWORD: postgres
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          poetry run alembic upgrade head
+
       - name: Lint with ruff
         run: |
           poetry run ruff check .
@@ -36,3 +86,6 @@ jobs:
       - name: Run tests with pytest
         run: |
           poetry run pytest -vv -s --cache-clear ./
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
