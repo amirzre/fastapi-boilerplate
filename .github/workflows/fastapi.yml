@@ -64,20 +64,6 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
 
-      - name: Set up Test Database
-        run: |
-          psql -h localhost -U postgres -d test_db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
-        env:
-          PGUSER: postgres
-          PGPASSWORD: postgres
-
-      - name: Run migrations
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
-        run: |
-          poetry run alembic upgrade head
-
       - name: Lint with ruff
         run: |
           poetry run ruff check .
