@@ -58,6 +58,21 @@ jobs:
           poetry install
           poetry install --with dev
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL...";
+            sleep 2;
+          done
+        env:
+          PGPASSWORD: postgresql
+
+      - name: Create test database
+        run: |
+          psql -h localhost -U postgres -c "CREATE DATABASE \"boilerplate-test\";"
+        env:
+          PGPASSWORD: postgresql
+
       - name: Lint with ruff
         run: |
           poetry run ruff check .
