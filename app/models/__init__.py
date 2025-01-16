@@ -1,3 +1,6 @@
-from core.db import Base  # noqa
+from core.db import Base
 
-from .user import User, UserRole  # noqa
+from .post import Post
+from .user import User, UserRole
+
+__all__ = ["Base", "User", "UserRole", "Post"]

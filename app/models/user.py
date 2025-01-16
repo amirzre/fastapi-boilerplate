@@ -1,7 +1,7 @@
 from enum import auto
 
 from sqlalchemy import Boolean, Enum, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.db import Base
 from core.db.mixins import IDUUIDMixin, TimestampMixin
@@ -20,5 +20,7 @@ class User(Base, IDUUIDMixin, TimestampMixin):
     first_name: Mapped[str] = mapped_column(String(50), nullable=True)
     last_name: Mapped[str] = mapped_column(String(50), nullable=True)
     password: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.USER, nullable=False)
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole, name="user_role"), default=UserRole.USER, nullable=False)
     activated: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    posts = relationship("Post", back_populates="user", cascade="all, delete-orphan")
