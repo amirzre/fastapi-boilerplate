@@ -8,6 +8,18 @@ from core.repository import BaseRepository
 class PostRepository(BaseRepository[Post]):
     """Post repository provides all the database operations for the Post model."""
 
+    async def get_by_uuid(self, uuid: UUID4) -> Post | None:
+        """
+        Get Post by UUID.
+
+        param uuid: Post UUID.
+        return: Post or None.
+        """
+        query = self._query()
+        query = query.filter(Post.uuid == uuid)
+
+        return await self._one_or_none(query)
+
     async def get_user_by_uuid(self, uuid: UUID4) -> User | None:
         """
         Get User by UUID.
