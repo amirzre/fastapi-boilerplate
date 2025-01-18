@@ -1,5 +1,5 @@
 from .auth import UserLoginRequest
-from .post import CreatePostRequest
+from .post import CreatePostRequest, UpdatePostRequest
 from .user import RegisterUserRequest, UpdateUserRequest
 
 __all__ = [
@@ -7,4 +7,5 @@ __all__ = [
     "UpdateUserRequest",
     "UserLoginRequest",
     "CreatePostRequest",
+    "UpdatePostRequest",
 ]
