@@ -1,8 +1,8 @@
 """add_posts_table
 
-Revision ID: 662b589604c6
+Revision ID: 3f15bec04ed2
 Revises: 17f9dafacfb9
-Create Date: 2025-01-16 05:00:37.766188
+Create Date: 2025-01-18 06:29:29.571818
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "662b589604c6"
+revision: str = "3f15bec04ed2"
 down_revision: Union[str, None] = "17f9dafacfb9"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,8 +30,8 @@ def upgrade() -> None:
         sa.Column("title", sa.String(length=200), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("status", sa.Enum("DRAFT", "PUBLISHED", "ARCHIVED", name="post_status"), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
+        sa.Column("user_id", sa.UUID(), nullable=False),
+        sa.ForeignKeyConstraint(["user_id"], ["users.uuid"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_posts_deleted"), "posts", ["deleted"], unique=False)

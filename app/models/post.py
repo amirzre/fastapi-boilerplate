@@ -1,6 +1,7 @@
 from enum import auto
 
-from sqlalchemy import Enum, ForeignKey, Integer, String, Text
+from pydantic import UUID4
+from sqlalchemy import UUID, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.db import Base
@@ -22,6 +23,6 @@ class Post(Base, IDUUIDMixin, TimestampMixin):
     status: Mapped[PostStatus] = mapped_column(
         Enum(PostStatus, name="post_status"), default=PostStatus.DRAFT, nullable=False
     )
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[UUID4] = mapped_column(UUID, ForeignKey("users.uuid", ondelete="CASCADE"), nullable=False)
 
-    user = relationship("User", back_populates="posts", cascade="all, delete-orphan")
+    user = relationship("User", back_populates="posts")
