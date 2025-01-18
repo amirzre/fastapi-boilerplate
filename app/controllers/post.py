@@ -2,7 +2,7 @@ from pydantic import UUID4
 
 from app.models import Post
 from app.repositories import PostRepository
-from app.schemas.request import CreatePostRequest
+from app.schemas.request import CreatePostRequest, UpdatePostRequest
 from app.schemas.response import PostResponse
 from core.controller import BaseController
 from core.db import Transactional
@@ -43,3 +43,26 @@ class PostController(BaseController[Post]):
             status=created_post.status,
             user_id=created_post.user_id,
         )
+
+    @Transactional()
+    async def update_post(self, *, post_uuid: UUID4, update_post_request: UpdatePostRequest) -> PostResponse:
+        post = await self.post_repository.get_by_uuid(uuid=post_uuid)
+        if not post:
+            raise NotFoundException(message=_("Post not found."))
+
+        updated_post = await self.post_repository.update(model=post, attributes=update_post_request)
+
+        return PostResponse(
+            uuid=updated_post.uuid,
+            title=updated_post.title,
+            status=updated_post.status,
+            user_id=updated_post.user_id,
+        )
+
+    @Transactional()
+    async def delete_post(self, *, post_uuid: UUID4) -> None:
+        post = await self.post_repository.get_by_uuid(uuid=post_uuid)
+        if not post:
+            raise NotFoundException(message=_("Post not found."))
+
+        return await self.post_repository.delete(model=post)
