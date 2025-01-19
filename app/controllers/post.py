@@ -2,7 +2,8 @@ from pydantic import UUID4
 
 from app.models import Post
 from app.repositories import PostRepository
-from app.schemas.request import CreatePostRequest, UpdatePostRequest
+from app.schemas.extra import PaginationResponse
+from app.schemas.request import CreatePostRequest, PostFilterParams, UpdatePostRequest
 from app.schemas.response import PostResponse
 from core.controller import BaseController
 from core.db import Transactional
@@ -16,6 +17,19 @@ class PostController(BaseController[Post]):
     def __init__(self, post_repository: PostRepository):
         super().__init__(model=Post, repository=post_repository)
         self.post_repository = post_repository
+
+    async def get_user_posts(
+        self, *, user_id: UUID4, filter_params: PostFilterParams
+    ) -> PaginationResponse[PostResponse]:
+        user = await self.post_repository.get_user_by_uuid(uuid=user_id)
+        if not user:
+            raise NotFoundException(message=_("User not found."))
+
+        posts, total = await self.post_repository.get_posts_by_user(user_id=user.uuid, filter_params=filter_params)
+
+        return PaginationResponse[PostResponse](
+            limit=filter_params.limit, offset=filter_params.offset, total=total, items=posts
+        )
 
     async def get_post(self, *, post_uuid: UUID4) -> PostResponse:
         post = await self.post_repository.get_by_uuid(uuid=post_uuid)

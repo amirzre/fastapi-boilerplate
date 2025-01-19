@@ -1,5 +1,5 @@
 from .auth import UserLoginRequest
-from .post import CreatePostRequest, UpdatePostRequest
+from .post import CreatePostRequest, PostFilterParams, UpdatePostRequest
 from .user import RegisterUserRequest, UpdateUserRequest
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     "UserLoginRequest",
     "CreatePostRequest",
     "UpdatePostRequest",
+    "PostFilterParams",
 ]
