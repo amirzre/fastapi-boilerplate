@@ -25,7 +25,7 @@ async def get_users(
     """
     Retrieve users.
     """
-    users = await user_controller.get_filtered_user(filter_params=filter_params)
+    users = await user_controller.get_users(filter_params=filter_params)
     return APIResponse(users)
 
 
