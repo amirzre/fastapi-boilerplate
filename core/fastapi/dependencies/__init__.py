@@ -1,3 +1,4 @@
+from .acl import Permissions
 from .authentication import AuthenticationHandler
 from .cache import get_cache
 from .current_user import get_authenticated_user, get_current_user, get_current_user_with_refresh_token
@@ -16,4 +17,5 @@ __all__ = [
     "get_current_user_with_refresh_token",
     "get_cache",
     "get_health_check",
+    "Permissions",
 ]
