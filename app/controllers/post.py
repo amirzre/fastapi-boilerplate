@@ -9,6 +9,7 @@ from core.controller import BaseController
 from core.db import Transactional
 from core.exceptions import NotFoundException
 from core.i18n import translate as _
+from core.security import ACLRegistry
 
 
 class PostController(BaseController[Post]):
@@ -42,6 +43,8 @@ class PostController(BaseController[Post]):
 
         posts, total = await self.post_repository.get_posts_by_user(user_id=user.uuid, filter_params=filter_params)
 
+        [ACLRegistry.set_acl(post.uuid, post.__acl__()) for post in posts]
+
         return PaginationResponse[PostResponse](
             limit=filter_params.limit, offset=filter_params.offset, total=total, items=posts
         )
@@ -57,6 +60,9 @@ class PostController(BaseController[Post]):
         post = await self.post_repository.get_by_uuid(uuid=post_uuid)
         if not post:
             raise NotFoundException(message=_("Post not found."))
+
+        acl = post.__acl__()
+        ACLRegistry.set_acl(resource_id=post.uuid, acl=acl)
 
         return PostResponse(
             uuid=post.uuid,
@@ -79,6 +85,9 @@ class PostController(BaseController[Post]):
             raise NotFoundException(message=_("User not found."))
 
         created_post = await self.post_repository.create(attributes=create_post_request)
+
+        acl = created_post.__acl__()
+        ACLRegistry.set_acl(resource_id=created_post.uuid, acl=acl)
 
         return PostResponse(
             uuid=created_post.uuid,
@@ -103,6 +112,9 @@ class PostController(BaseController[Post]):
 
         updated_post = await self.post_repository.update(model=post, attributes=update_post_request)
 
+        acl = updated_post.__acl__()
+        ACLRegistry.set_acl(resource_id=updated_post.uuid, acl=acl)
+
         return PostResponse(
             uuid=updated_post.uuid,
             title=updated_post.title,
@@ -122,5 +134,8 @@ class PostController(BaseController[Post]):
         post = await self.post_repository.get_by_uuid(uuid=post_uuid)
         if not post:
             raise NotFoundException(message=_("Post not found."))
+
+        acl = post.__acl__()
+        ACLRegistry.set_acl(resource_id=post.uuid, acl=acl)
 
         return await self.post_repository.delete(model=post)

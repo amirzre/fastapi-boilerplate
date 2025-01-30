@@ -9,7 +9,7 @@ from core.controller import BaseController
 from core.db import Transactional
 from core.exceptions import BadRequestException, NotFoundException
 from core.i18n import translate as _
-from core.security import PasswordHandler
+from core.security import ACLRegistry, PasswordHandler
 
 
 class UserController(BaseController[User]):
@@ -34,6 +34,7 @@ class UserController(BaseController[User]):
         :return: A pagination response containing the filtered users.
         """
         users, total = await self.user_repository.get_filtered_users(filter_params=filter_params)
+
         return PaginationResponse[UserResponse](
             limit=filter_params.limit, offset=filter_params.offset, total=total, items=users
         )
@@ -49,6 +50,10 @@ class UserController(BaseController[User]):
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
             raise NotFoundException(message=_("User not found."))
+
+        acl = user.__acl__()
+        ACLRegistry.set_acl(resource_id=user.uuid, acl=acl)
+
         return UserResponse(
             uuid=user.uuid,
             email=user.email,
@@ -105,6 +110,10 @@ class UserController(BaseController[User]):
             update_data["password"] = PasswordHandler.hash(password=new_password)
 
         updated_user = await self.user_repository.update(model=user, attributes=update_data)
+
+        acl = updated_user.__acl__()
+        ACLRegistry.set_acl(resource_id=updated_user.uuid, acl=acl)
+
         return UserResponse(
             uuid=updated_user.uuid,
             email=updated_user.email,
@@ -125,5 +134,8 @@ class UserController(BaseController[User]):
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
             raise NotFoundException(message=_("User not found."))
+
+        acl = user.__acl__()
+        ACLRegistry.set_acl(resource_id=user.uuid, acl=acl)
 
         return await self.user_repository.delete(model=user)
