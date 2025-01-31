@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-01-09 01:58-0500\n"
+"POT-Creation-Date: 2025-01-31 02:20-0500\n"
 "PO-Revision-Date: 2025-01-09 02:01-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa\n"
@@ -18,30 +18,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: app/controllers/auth.py:28 app/controllers/auth.py:30
+#: app/controllers/auth.py:41 app/controllers/auth.py:43
 msgid "Invalid credentials."
 msgstr "نام‌کاربری/کلمه عبور شما صحیح نمی‌باشد."
 
-#: app/controllers/auth.py:32 core/fastapi/dependencies/current_user.py:30
+#: app/controllers/auth.py:45 core/fastapi/dependencies/current_user.py:30
 msgid "The user is inactive."
 msgstr "کاربر غیرفعال می‌باشد."
 
-#: app/controllers/auth.py:47
+#: app/controllers/auth.py:70
 msgid "Invalid token or missing session ID."
 msgstr "توکن شما معتبر نمی‌باشد."
 
-#: app/controllers/auth.py:51 app/controllers/user.py:33
-#: app/controllers/user.py:67 app/controllers/user.py:87
+#: app/controllers/auth.py:74 app/controllers/post.py:42
+#: app/controllers/post.py:85 app/controllers/user.py:52
+#: app/controllers/user.py:105 app/controllers/user.py:136
 msgid "User not found."
 msgstr "کاربر مورد نظر یافت نشد."
 
-#: app/controllers/auth.py:65
+#: app/controllers/auth.py:96
 msgid "Refresh token not found."
 msgstr "توکن رفرش یافت نشد."
 
-#: app/controllers/user.py:47
+#: app/controllers/post.py:62 app/controllers/post.py:111
+#: app/controllers/post.py:136
+#, fuzzy
+msgid "Post not found."
+msgstr "کاربر مورد نظر یافت نشد."
+
+#: app/controllers/user.py:77
 msgid "User already exists with this email."
 msgstr "کاربری با این ایمیل از قبل وجود دارد."
+
+#: core/fastapi/dependencies/acl.py:14
+#: core/fastapi/dependencies/permission.py:22
+msgid "You do not have permission to perform this action."
+msgstr "شما اجازه انجام این عملیات را ندارید."
 
 #: core/fastapi/dependencies/authentication.py:23
 #: core/fastapi/dependencies/authentication.py:28
@@ -57,11 +69,7 @@ msgstr "اشکال در اتصال به حافظه کش."
 msgid "You are not authorized to access this resource."
 msgstr "شما مجاز به دسترسی به این منبع نیستید."
 
-#: core/fastapi/dependencies/permission.py:22
-msgid "You do not have permission to perform this action."
-msgstr "شما اجازه انجام این عملیات را ندارید."
-
-#: core/responses/base.py:21 core/responses/base.py:41
+#: core/responses/base.py:22 core/responses/base.py:42
 msgid "Operation completed successfully."
 msgstr "عملیات با موفقیت انجام شد."
 
@@ -73,4 +81,7 @@ msgstr "توکن شما منقضی شده است."
 msgid ""
 "Password must contain at least 8 characters, including one uppercase "
 "letter, one lowercase letter, one number, and one special character."
-msgstr "کلمه عبور باید شامل ۸ کاراکتر، حروف بزرگ، حروف کوچک، اعداد و کاراکتر‌های خاص باشد."
+msgstr ""
+"کلمه عبور باید شامل ۸ کاراکتر، حروف بزرگ، حروف کوچک، اعداد و کاراکتر‌های "
+"خاص باشد."
+
