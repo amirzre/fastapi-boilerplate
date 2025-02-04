@@ -150,5 +150,5 @@ class TestPermissionsIntegration:
 
             with patch("core.security.access_control.AccessControl.assert_access") as mock_assert:
                 mock_assert.side_effect = ForbiddenException()
-                with pytest.raises(ForbiddenException) as exc_info:
+                with pytest.raises(ForbiddenException):
                     await test_endpoint(resource="test_resource")
