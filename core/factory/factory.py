@@ -24,4 +24,7 @@ class Factory:
         return AuthController(user_repository=self.user_repository(db_session=db_session))
 
     def get_post_controller(self, db_session=Depends(get_session)):
-        return PostController(post_repository=self.post_repository(db_session=db_session))
+        return PostController(
+            post_repository=self.post_repository(db_session=db_session),
+            user_repository=self.user_repository(db_session=db_session),
+        )
