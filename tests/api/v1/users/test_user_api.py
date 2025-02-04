@@ -109,25 +109,36 @@ class TestUserEndpoints:
         response = await client.post("/api/v1/users/", json=user2.model_dump())
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    async def test_update_user(self, client: AsyncClient, user_auth_token: tuple[str, str], test_user: dict):
-        """Test updating an existing user."""
+    async def test_update_other_user_unauthorized(
+        self, client: AsyncClient, user_auth_token: tuple[str, str], admin_auth_token: tuple[str, str]
+    ):
+        """Test updating another user without proper permissions."""
         access_token, _ = user_auth_token
-        user_uuid = test_user["uuid"]
-        updated_user_data = UpdateUserRequest(
-            email="updated_email@example.com",
-            first_name="UpdatedFirstName",
-            last_name="UpdatedLastName",
-            password="Updated@Password123",
+        admin_token, _ = admin_auth_token
+
+        new_user_data = RegisterUserRequest(
+            email="another_test@email.com",
+            first_name="Another",
+            last_name="User",
+            password="Password@123",
+            role=UserRole.USER,
+            activated=True,
         )
+        client.cookies.set(name="Access-Token", value=admin_token)
+        response = await client.post("/api/v1/users/", json=new_user_data.model_dump())
+        other_user = response.json().get("content")
+
+        assert response.status_code == status.HTTP_201_CREATED
 
         client.cookies.set(name="Access-Token", value=access_token)
-        response = await client.put(f"/api/v1/users/{user_uuid}", json=updated_user_data.model_dump())
-        assert response.status_code == status.HTTP_200_OK
-
-        updated_user = response.json().get("content")
-        assert updated_user["email"] == "updated_email@example.com"
-        assert updated_user["first_name"] == "UpdatedFirstName"
-        assert updated_user["last_name"] == "UpdatedLastName"
+        updated_user_data = UpdateUserRequest(
+            email="updated_other_email@example.com",
+            first_name="UpdatedOtherFirstName",
+            last_name="UpdatedOtherLastName",
+            password="UpdatedOther@Password123",
+        )
+        response = await client.put(f"/api/v1/users/{other_user['uuid']}", json=updated_user_data.model_dump())
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_update_non_existent_user(self, client: AsyncClient, user_auth_token: tuple[str, str]):
         """Test updating a non-existent user."""
@@ -145,15 +156,30 @@ class TestUserEndpoints:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_delete_user(self, client: AsyncClient, user_auth_token: tuple[str, str], test_user: dict):
-        """Test deleting an existing user."""
+    async def test_delete_other_user_unauthorized(
+        self, client: AsyncClient, user_auth_token: tuple[str, str], admin_auth_token: tuple[str, str]
+    ):
+        """Test deleting another user without proper permissions."""
         access_token, _ = user_auth_token
-        user_uuid = test_user["uuid"]
+        admin_token, _ = admin_auth_token
+
+        new_user_data = RegisterUserRequest(
+            email="delete_test@email.com",
+            first_name="Delete",
+            last_name="User",
+            password="Password@123",
+            role=UserRole.USER,
+            activated=True,
+        )
+        client.cookies.set(name="Access-Token", value=admin_token)
+        response = await client.post("/api/v1/users/", json=new_user_data.model_dump())
+        other_user = response.json().get("content")
+
+        assert response.status_code == status.HTTP_201_CREATED
 
         client.cookies.set(name="Access-Token", value=access_token)
-        response = await client.delete(f"/api/v1/users/{user_uuid}")
-
-        assert response.status_code == status.HTTP_204_NO_CONTENT
+        response = await client.delete(f"/api/v1/users/{other_user['uuid']}")
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_delete_non_existent_user(self, client: AsyncClient, user_auth_token: tuple[str, str]):
         """Test deleting a non-existent user."""
