@@ -66,12 +66,11 @@ class BaseController(Generic[ModelType]):
         return create
 
     @Transactional()
-    async def delete(self, model: ModelType) -> bool:
+    async def delete(self, model: ModelType) -> None:
         """
         Deletes the Object from the DB.
 
         :param model: The model to delete.
-        :return: True if the object was deleted, False otherwise.
+        :return: None.
         """
-        delete = await self.repository.delete(model)
-        return delete
+        return await self.repository.delete(model)
