@@ -23,8 +23,20 @@ def reset_session_context(context: Token) -> None:
 
 
 engines = {
-    "writer": create_async_engine(config.POSTGRES_URL.unicode_string(), pool_recycle=3600),
-    "reader": create_async_engine(config.POSTGRES_URL.unicode_string(), pool_recycle=3600),
+    "writer": create_async_engine(
+        config.POSTGRES_URL,
+        pool_recycle=config.SQLALCHEMY_POOL_RECYCLE,
+        max_overflow=config.SQLALCHEMY_MAX_OVERFLOW,
+        pool_size=config.SQLALCHEMY_POOL_SIZE,
+        pool_timeout=config.SQLALCHEMY_POOL_TIMEOUT,
+    ),
+    "reader": create_async_engine(
+        config.POSTGRES_URL,
+        pool_recycle=config.SQLALCHEMY_POOL_RECYCLE,
+        max_overflow=config.SQLALCHEMY_MAX_OVERFLOW,
+        pool_size=config.SQLALCHEMY_POOL_SIZE,
+        pool_timeout=config.SQLALCHEMY_POOL_TIMEOUT,
+    ),
 }
 
 
