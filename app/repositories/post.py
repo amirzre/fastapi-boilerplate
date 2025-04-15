@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from pydantic import UUID4
 
 from app.models import Post
@@ -20,7 +22,7 @@ class PostRepository(BaseRepository[Post]):
 
         return await self._one_or_none(query)
 
-    async def get_posts_by_user(self, user_id: UUID4, filter_params: PostFilterParams) -> tuple[list[Post], int]:
+    async def get_posts_by_user(self, user_id: UUID4, filter_params: PostFilterParams) -> tuple[Sequence[Post], int]:
         """
         Get Posts by User ID with optional filters and return the total count.
 
