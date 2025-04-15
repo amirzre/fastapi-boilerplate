@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Sequence, Type, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import Select, func
+from sqlalchemy import ScalarResult, Select, Subquery, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 
@@ -18,7 +18,7 @@ class BaseRepository(Generic[ModelType]):
         self.session = db_session
         self.model_class: Type[ModelType] = model
 
-    async def get_all(self, skip: int = 0, limit: int = 100) -> list[ModelType]:
+    async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[ModelType]:
         """
         Returns a list of model instances.
 
@@ -36,7 +36,7 @@ class BaseRepository(Generic[ModelType]):
         field: str,
         value: Any,
         unique: bool = False,
-    ) -> ModelType:
+    ) -> ModelType | Sequence[ModelType]:
         """
         Returns the model instance matching the field and value.
 
@@ -79,14 +79,15 @@ class BaseRepository(Generic[ModelType]):
         :param attributes: A Pydantic model or dictionary of attributes to update the model with.
         :return: The updated model instance.
         """
-        data = attributes.model_dump(exclude_unset=True) if isinstance(attributes, BaseModel) else attributes
+        if attributes:
+            data = attributes.model_dump(exclude_unset=True) if isinstance(attributes, BaseModel) else attributes
 
-        for key, value in data.items():
-            if isinstance(value, datetime):
-                if value.tzinfo is not None:
-                    value = value.replace(tzinfo=None)
-                data[key] = value
-            setattr(model, key, value)
+            for key, value in data.items():
+                if isinstance(value, datetime):
+                    if value.tzinfo is not None:
+                        value = value.replace(tzinfo=None)
+                    data[key] = value
+                setattr(model, key, value)
 
         if hasattr(model, "updated"):
             setattr(model, "updated", datetime.now())
@@ -119,17 +120,17 @@ class BaseRepository(Generic[ModelType]):
 
         return query
 
-    async def _all(self, query: Select) -> list[ModelType]:
+    async def _all(self, query: Select) -> Sequence[ModelType]:
         """
         Returns all results from the query.
 
         :param query: The query to execute.
         :return: A list of model instances.
         """
-        query = await self.session.scalars(query)
-        return query.all()
+        result: ScalarResult[ModelType] = await self.session.scalars(query)
+        return result.all()
 
-    async def _all_unique(self, query: Select) -> list[ModelType]:
+    async def _all_unique(self, query: Select) -> Sequence[ModelType]:
         result = await self.session.execute(query)
         return result.unique().scalars().all()
 
@@ -140,13 +141,13 @@ class BaseRepository(Generic[ModelType]):
         :param query: The query to execute.
         :return: The first model instance.
         """
-        query = await self.session.scalars(query)
-        return query.first()
+        result: ScalarResult[ModelType] = await self.session.scalars(query)
+        return result.first()
 
     async def _one_or_none(self, query: Select) -> ModelType | None:
         """Returns the first result from the query or None."""
-        query = await self.session.scalars(query)
-        return query.one_or_none()
+        result: ScalarResult[ModelType] = await self.session.scalars(query)
+        return result.one_or_none()
 
     async def _one(self, query: Select) -> ModelType:
         """
@@ -155,18 +156,19 @@ class BaseRepository(Generic[ModelType]):
         :param query: The query to execute.
         :return: The first model instance.
         """
-        query = await self.session.scalars(query)
-        return query.one()
+        result: ScalarResult[ModelType] = await self.session.scalars(query)
+        return result.one()
 
     async def _count(self, query: Select) -> int:
         """
         Returns the count of the records.
-
         :param query: The query to execute.
+        :return: Count of records as integer.
         """
-        query = query.subquery()
-        query = await self.session.scalars(select(func.count()).select_from(query))
-        return query.one()
+        subquery: Subquery = query.subquery()
+        count_query = select(func.count()).select_from(subquery)
+        result: ScalarResult[int] = await self.session.scalars(count_query)
+        return result.one()
 
     async def _sort_by(
         self,
