@@ -46,7 +46,10 @@ class PostController(BaseController[Post]):
         [ACLRegistry.set_acl(post.uuid, post.__acl__()) for post in posts]
 
         return PaginationResponse[PostResponse](
-            limit=filter_params.limit, offset=filter_params.offset, total=total, items=posts
+            limit=filter_params.limit,
+            offset=filter_params.offset,
+            total=total,
+            items=[PostResponse.model_validate(post) for post in posts],
         )
 
     async def get_post(self, *, post_uuid: UUID4) -> PostResponse:
