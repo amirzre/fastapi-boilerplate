@@ -18,3 +18,5 @@ async def get_cache() -> client.Redis:
             return redis_client
     except Exception:
         raise GetRedisException()
+
+    raise GetRedisException()
