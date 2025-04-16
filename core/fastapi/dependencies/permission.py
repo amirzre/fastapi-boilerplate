@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Type
 
 from fastapi import Request, status
-from fastapi.openapi.models import APIKey, APIKeyIn
+from fastapi.security import APIKeyHeader
 from fastapi.security.base import SecurityBase
 
 from app.models import UserRole
@@ -51,7 +51,7 @@ class IsAdmin(IsAuthenticated):
 class PermissionDependency(SecurityBase):
     def __init__(self, permissions: list[Type[BasePermission]]):
         self.permissions = permissions
-        self.model: APIKey = APIKey(**{"in": APIKeyIn.header}, name="Authorization")
+        self.model: APIKeyHeader = APIKeyHeader(name="Authorization")
         self.scheme_name = self.__class__.__name__
 
     async def __call__(self, request: Request):
