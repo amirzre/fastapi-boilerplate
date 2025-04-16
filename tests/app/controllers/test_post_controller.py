@@ -90,7 +90,16 @@ class TestPostController:
         mock_post: Mock,
     ) -> None:
         """Test successful retrieval of user posts."""
-        filter_params = PostFilterParams(limit=10, offset=0)
+        filter_params = PostFilterParams(
+            limit=10,
+            offset=0,
+            title=None,
+            status=None,
+            created_from=None,
+            created_to=None,
+            updated_from=None,
+            updated_to=None,
+        )
         user_repository.get_by_uuid.return_value = Mock(uuid=mock_uuid)
         post_repository.get_posts_by_user.return_value = ([mock_post], 1)
 
@@ -106,7 +115,16 @@ class TestPostController:
         self, post_controller: PostController, user_repository: AsyncMock, mock_uuid: UUID4
     ) -> None:
         """Test get_user_posts when user doesn't exist."""
-        filter_params = PostFilterParams(limit=10, offset=0)
+        filter_params = PostFilterParams(
+            limit=10,
+            offset=0,
+            title=None,
+            status=None,
+            created_from=None,
+            created_to=None,
+            updated_from=None,
+            updated_to=None,
+        )
         user_repository.get_by_uuid.return_value = None
 
         with pytest.raises(NotFoundException):
@@ -157,7 +175,11 @@ class TestPostController:
         self, post_controller: PostController, post_repository: AsyncMock, mock_uuid: UUID4, mock_post: Mock
     ) -> None:
         """Test successful post update."""
-        update_request = UpdatePostRequest(title="Updated Title", status=PostStatus.PUBLISHED)
+        update_request = UpdatePostRequest(
+            title="Updated Title",
+            status=PostStatus.PUBLISHED,
+            content="Updated content",
+        )
         post_repository.get_by_uuid.return_value = mock_post
         post_repository.update.return_value = mock_post
 
