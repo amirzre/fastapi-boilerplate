@@ -1,4 +1,4 @@
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Sequence, Type, TypeVar
 from uuid import UUID
 
 from core.db import Base, Transactional
@@ -15,7 +15,7 @@ class BaseController(Generic[ModelType]):
         self.model_class = model
         self.repository = repository
 
-    async def get_by_id(self, id_: int) -> ModelType:
+    async def get_by_id(self, id_: int) -> ModelType | Sequence[ModelType]:
         """
         Returns the model instance matching the id.
 
@@ -29,7 +29,7 @@ class BaseController(Generic[ModelType]):
 
         return db_obj
 
-    async def get_by_uuid(self, uuid: UUID) -> ModelType:
+    async def get_by_uuid(self, uuid: UUID) -> ModelType | Sequence[ModelType]:
         """
         Returns the model instance matching the uuid.
 
@@ -42,7 +42,7 @@ class BaseController(Generic[ModelType]):
             raise NotFoundException(f"{self.model_class.__tablename__.title()} with id: {uuid} does not exist")
         return db_obj
 
-    async def get_all(self, skip: int = 0, limit: int = 100) -> list[ModelType]:
+    async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[ModelType]:
         """
         Returns a list of records based on pagination params.
 
@@ -66,12 +66,11 @@ class BaseController(Generic[ModelType]):
         return create
 
     @Transactional()
-    async def delete(self, model: ModelType) -> bool:
+    async def delete(self, model: ModelType) -> None:
         """
         Deletes the Object from the DB.
 
         :param model: The model to delete.
-        :return: True if the object was deleted, False otherwise.
+        :return: None.
         """
-        delete = await self.repository.delete(model)
-        return delete
+        return await self.repository.delete(model)

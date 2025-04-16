@@ -1,3 +1,4 @@
+from typing import Sequence
 from uuid import UUID
 
 from app.models import User
@@ -34,7 +35,7 @@ class UserRepository(BaseRepository[User]):
 
         return await self._one_or_none(query)
 
-    async def get_filtered_users(self, filter_params: UserFilterParams) -> tuple[list[User], int]:
+    async def get_filtered_users(self, filter_params: UserFilterParams) -> tuple[Sequence[User], int]:
         """
         Get users by filter and return the total count.
 

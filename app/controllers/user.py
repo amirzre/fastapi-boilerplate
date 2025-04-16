@@ -36,7 +36,10 @@ class UserController(BaseController[User]):
         users, total = await self.user_repository.get_filtered_users(filter_params=filter_params)
 
         return PaginationResponse[UserResponse](
-            limit=filter_params.limit, offset=filter_params.offset, total=total, items=users
+            limit=filter_params.limit,
+            offset=filter_params.offset,
+            total=total,
+            items=[UserResponse.model_validate(user) for user in users],
         )
 
     async def get_user(self, *, user_uuid: UUID4) -> UserResponse:

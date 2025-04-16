@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Request, Response, status
 from redis.asyncio import client
 
 from app.controllers import AuthController
-from app.models import User
 from app.schemas.request import UserLoginRequest
 from app.schemas.response import UserResponse
 from core.factory import Factory
@@ -90,7 +89,7 @@ async def refresh_token(
 
 
 @auth_router.get("/me", status_code=status.HTTP_200_OK)
-async def me(user: User = Depends(get_current_user)) -> APIResponseType[UserResponse]:
+async def me(user: UserResponse = Depends(get_current_user)) -> APIResponseType[UserResponse]:
     """
     Retrieve current user information.
     """

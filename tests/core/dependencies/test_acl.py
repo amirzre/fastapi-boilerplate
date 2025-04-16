@@ -1,4 +1,6 @@
 import uuid
+from types import SimpleNamespace
+from typing import Any, Awaitable, Callable, cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -25,6 +27,7 @@ class TestForbiddenException:
         assert "permission" in str(exception.message).lower()
 
 
+@pytest.mark.asyncio
 class TestGetUserPrincipals:
     """
     Test suite for get_user_principals function.
@@ -50,7 +53,6 @@ class TestGetUserPrincipals:
         factory.get_user_controller = MagicMock(return_value=AsyncMock(spec=UserController))
         return factory
 
-    @pytest.mark.asyncio
     async def test_get_principals_no_user(self, mock_request, mock_user_controller):
         """
         Test getting principals when no user is authenticated.
@@ -63,7 +65,6 @@ class TestGetUserPrincipals:
         assert principals == [Everyone]
         mock_user_controller.get_by_uuid.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_get_principals_regular_user(self, mock_request, mock_user_controller):
         """
         Test getting principals for a regular authenticated user.
@@ -72,10 +73,8 @@ class TestGetUserPrincipals:
         user_id = uuid.uuid4()
         mock_request.state.user = {"uuid": user_id}
 
-        mock_user = AsyncMock()
-        mock_user.uuid = user_id
-        mock_user.role = UserRole.USER
-        mock_user_controller.get_by_uuid.return_value = mock_user
+        mock_user = SimpleNamespace(uuid=user_id, role=UserRole.USER)
+        mock_user_controller.get_user.return_value = mock_user
 
         principals = await get_user_principals(request=mock_request, user_controller=mock_user_controller)
 
@@ -83,9 +82,8 @@ class TestGetUserPrincipals:
         assert Authenticated in principals
         assert UserPrincipal(str(user_id)) in principals
         assert RolePrincipal(UserRole.ADMIN) not in principals
-        mock_user_controller.get_by_uuid.assert_called_once_with(uuid=user_id)
+        mock_user_controller.get_user.assert_called_once_with(user_uuid=user_id)
 
-    @pytest.mark.asyncio
     async def test_get_principals_admin_user(self, mock_request, mock_user_controller):
         """
         Test getting principals for an admin user.
@@ -94,10 +92,8 @@ class TestGetUserPrincipals:
         user_id = uuid.uuid4()
         mock_request.state.user = {"uuid": user_id}
 
-        mock_user = AsyncMock()
-        mock_user.uuid = user_id
-        mock_user.role = UserRole.ADMIN
-        mock_user_controller.get_by_uuid.return_value = mock_user
+        mock_user = SimpleNamespace(uuid=user_id, role=UserRole.ADMIN)
+        mock_user_controller.get_user.return_value = mock_user
 
         principals = await get_user_principals(request=mock_request, user_controller=mock_user_controller)
 
@@ -105,9 +101,10 @@ class TestGetUserPrincipals:
         assert Authenticated in principals
         assert UserPrincipal(str(user_id)) in principals
         assert RolePrincipal(UserRole.ADMIN) in principals
-        mock_user_controller.get_by_uuid.assert_called_once_with(uuid=user_id)
+        mock_user_controller.get_user.assert_called_once_with(user_uuid=user_id)
 
 
+@pytest.mark.asyncio
 class TestPermissionsIntegration:
     """
     Integration test suite for Permissions system.
@@ -131,7 +128,6 @@ class TestPermissionsIntegration:
         controller.get_by_uuid.return_value = mock_user
         return controller
 
-    @pytest.mark.asyncio
     async def test_complete_permission_flow(self, mock_request, mock_user_controller):
         """
         Test the complete flow of permission checking from request to access control.
@@ -139,16 +135,16 @@ class TestPermissionsIntegration:
         """
         permission_name = "test_permission"
 
-        # Create a test endpoint with Permissions
         @Permissions(permission_name)
         async def test_endpoint(request: Request = mock_request):
             return {"message": "success"}
 
-        # Mock the necessary components
+        test_endpoint_async: Callable[..., Awaitable[Any]] = cast(Callable[..., Awaitable[Any]], test_endpoint)
+
         with patch("core.fastapi.dependencies.acl.get_user_principals") as mock_get_principals:
             mock_get_principals.return_value = [Everyone, Authenticated]
 
             with patch("core.security.access_control.AccessControl.assert_access") as mock_assert:
                 mock_assert.side_effect = ForbiddenException()
                 with pytest.raises(ForbiddenException):
-                    await test_endpoint(resource="test_resource")
+                    await test_endpoint_async(resource="test_resource")

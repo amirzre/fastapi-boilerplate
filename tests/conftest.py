@@ -11,7 +11,7 @@ from core.config import config
 
 faker = Faker()
 
-engine = create_async_engine(config.POSTGRES_TEST_URL.unicode_string(), pool_pre_ping=True)
+engine = create_async_engine(config.POSTGRES_TEST_URL, pool_pre_ping=True)
 
 async_session_local = async_sessionmaker(
     bind=engine,

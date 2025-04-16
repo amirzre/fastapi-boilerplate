@@ -18,5 +18,5 @@ class SQLAlchemyMiddleware:
         except Exception as exception:
             raise exception
         finally:
-            await session.remove()
+            await session.close()
             reset_session_context(context=context)

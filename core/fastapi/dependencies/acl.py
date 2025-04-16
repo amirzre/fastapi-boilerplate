@@ -5,7 +5,7 @@ from app.models.user import UserRole
 from core.exceptions import CustomException
 from core.factory import Factory
 from core.i18n import translate as _
-from core.security.access_control import AccessControl, Authenticated, Everyone, RolePrincipal, UserPrincipal
+from core.security.access_control import AccessControl, Authenticated, Everyone, Principal, RolePrincipal, UserPrincipal
 
 
 class ForbiddenException(CustomException):
@@ -17,14 +17,14 @@ class ForbiddenException(CustomException):
 async def get_user_principals(
     request: Request,
     user_controller: UserController = Depends(Factory().get_user_controller),
-) -> list:
-    user_uuid = request.state.user.get("uuid")
-    principals = [Everyone]
+) -> list[Principal]:
+    principals: list[Principal] = [Everyone]
 
+    user_uuid = request.state.user.get("uuid")
     if not user_uuid:
         return principals
 
-    user = await user_controller.get_by_uuid(uuid=user_uuid)
+    user = await user_controller.get_user(user_uuid=user_uuid)
 
     principals.append(Authenticated)
     principals.append(UserPrincipal(str(user.uuid)))

@@ -3,9 +3,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import Column, Integer
 
+from app.models import Base
 from core.controller import BaseController
 from core.exceptions import NotFoundException
+
+
+class MockModel(Base):
+    __tablename__ = "test_model"
+    id = Column(Integer, primary_key=True)
 
 
 @pytest.mark.asyncio
@@ -27,9 +34,7 @@ class TestBaseController:
         """
         Sets up the necessary mocks and dependencies for each test.
         """
-        # Mock the model and repository
-        self.mock_model = MagicMock()
-        self.mock_model.__tablename__ = "test_model"
+        self.mock_model = MockModel
         self.mock_repository = AsyncMock()
 
         self.controller = BaseController(model=self.mock_model, repository=self.mock_repository)

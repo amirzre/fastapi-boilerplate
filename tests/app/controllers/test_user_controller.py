@@ -47,7 +47,17 @@ class TestUserController:
 
     async def test_get_users_success(self, user_controller, user_repository_mock):
         """Test retrieving users with filter parameters successfully."""
-        filter_params = UserFilterParams(limit=10, offset=0, email="test@example.com")
+        filter_params = UserFilterParams(
+            limit=10,
+            offset=0,
+            email="test@example.com",
+            role=None,
+            activated=True,
+            created_from=None,
+            created_to=None,
+            updated_from=None,
+            updated_to=None,
+        )
         mocked_users = [
             UserResponse(
                 uuid=uuid4(),
@@ -120,7 +130,12 @@ class TestUserController:
     async def test_update_user_success(self, user_controller, user_repository_mock, mock_user):
         """Test updating a user successfully."""
         user_uuid = mock_user.uuid
-        update_request = UpdateUserRequest(first_name="Updated name", last_name="Updated family")
+        update_request = UpdateUserRequest(
+            password="NewPassword@123",
+            email="updated.email@email.com",
+            first_name="updated first name",
+            last_name="updated last name",
+        )
         expected_acl = [(1, 2, 3)]
 
         updated_user = AsyncMock(
@@ -148,7 +163,12 @@ class TestUserController:
     async def test_update_user_with_password(self, user_controller, user_repository_mock, mock_user):
         """Test updating a user with new password."""
         user_uuid = mock_user.uuid
-        update_request = UpdateUserRequest(password="NewPassword@123")
+        update_request = UpdateUserRequest(
+            password="NewPassword@123",
+            email="updated.email@email.com",
+            first_name="updated first name",
+            last_name="updated last name",
+        )
         expected_acl = [(1, 2, 3)]
 
         updated_user = AsyncMock(

@@ -3,7 +3,7 @@ from enum import auto
 from pathlib import Path
 from secrets import token_urlsafe
 
-from pydantic import AnyHttpUrl, PostgresDsn, RedisDsn
+from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from core.enum import StrEnum
@@ -36,11 +36,9 @@ class Config(BaseConfig):
     ENVIRONMENT: EnvironmentType = EnvironmentType.DEVELOPMENT
     WORKERS: int = 1
 
-    POSTGRES_URL: PostgresDsn = PostgresDsn("postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate")
-    POSTGRES_TEST_URL: PostgresDsn = PostgresDsn(
-        "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate-test"
-    )
-    REDIS_URL: RedisDsn = RedisDsn("redis://localhost:6379/0")
+    POSTGRES_URL: str = "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate"
+    POSTGRES_TEST_URL: str = "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5432/boilerplate-test"
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     SECRET_KEY: str = token_urlsafe(32)
     JWT_ALGORITHM: str = "HS256"

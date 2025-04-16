@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import cast
 from uuid import uuid4
 
 import pytest
@@ -7,6 +8,7 @@ from pydantic import UUID4
 
 from core.security.access_control import (
     AccessControl,
+    ACLList,
     ACLRegistry,
     Allow,
     AllowAll,
@@ -78,9 +80,10 @@ class TestACLRegistry:
     def test_set_and_get_acl(self) -> None:
         """Test setting and retrieving ACL rules for a resource."""
         resource_id = uuid4()
-        acl_rules = [(Allow, UserPrincipal("user1"), ["read"])]
+        acl_rules = cast(ACLList, [(Allow, UserPrincipal("user1"), ["read"])])
 
         ACLRegistry.set_acl(resource_id, acl_rules)
+
         retrieved_acl = ACLRegistry.get_acl(resource_id)
 
         assert retrieved_acl == acl_rules
