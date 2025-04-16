@@ -4,7 +4,7 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.controllers import UserController
-from app.models import User
+from app.schemas.response import UserResponse
 from core.exceptions import BadRequestException
 from core.factory import Factory
 from core.fastapi.dependencies import AuthenticationHandler
@@ -22,10 +22,10 @@ async def get_current_user(
     request: Request,
     token: HTTPAuthorizationCredentials | None = Depends(HTTPBearer(auto_error=False)),
     user_controller: UserController = Depends(Factory().get_user_controller),
-) -> User:
+) -> UserResponse:
     handler = AuthenticationHandler(request)
     user_uuid = await handler.authenticate_user(token_type="Access", key="uuid", credentials=token)
-    user = await user_controller.get_by_uuid(uuid=user_uuid)
+    user = await user_controller.get_user(user_uuid=UUID(user_uuid))
     if user.activated is False:
         raise BadRequestException(message=_("The user is inactive."))
     return user

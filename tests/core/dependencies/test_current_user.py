@@ -1,4 +1,5 @@
 from unittest.mock import AsyncMock, MagicMock, patch
+from uuid import UUID
 
 import pytest
 from fastapi import Request
@@ -43,40 +44,38 @@ class TestCurrentUser:
         mock_authenticate_user.assert_awaited_once_with(token_type="Access", key="uuid", credentials=credentials)
 
     @patch("core.fastapi.dependencies.authentication.AuthenticationHandler.authenticate_user", new_callable=AsyncMock)
-    @patch.object(UserController, "get_by_uuid", new_callable=AsyncMock)
-    async def test_get_current_user(self, mock_get_by_uuid, mock_authenticate_user, mock_request):
+    @patch.object(UserController, "get_user", new_callable=AsyncMock)
+    async def test_get_current_user(self, mock_get_user, mock_authenticate_user, mock_request):
         """Test that `get_current_user` successfully retrieves the current user when the user is active."""
-        mock_authenticate_user.return_value = "user-uuid"
-        mock_get_by_uuid.return_value = AsyncMock(activated=True)
+        mock_authenticate_user.return_value = "a3b8f042-1e16-4f0a-a8f0-421e16df0a2f"
+        mock_get_user.return_value = AsyncMock(activated=True)
 
         credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="fake_access_token")
-
         mock_user_repository = AsyncMock(spec=UserRepository)
-        user_controller = UserController(user_repository=mock_user_repository)
 
+        user_controller = UserController(user_repository=mock_user_repository)
         user = await get_current_user(mock_request, token=credentials, user_controller=user_controller)
 
         assert user.activated
         mock_authenticate_user.assert_awaited_once_with(token_type="Access", key="uuid", credentials=credentials)
-        mock_get_by_uuid.assert_awaited_once_with(uuid="user-uuid")
+        mock_get_user.assert_awaited_once_with(user_uuid=UUID("a3b8f042-1e16-4f0a-a8f0-421e16df0a2f"))
 
     @patch("core.fastapi.dependencies.authentication.AuthenticationHandler.authenticate_user", new_callable=AsyncMock)
-    @patch.object(UserController, "get_by_uuid", new_callable=AsyncMock)
-    async def test_get_current_user_inactive(self, mock_get_by_uuid, mock_authenticate_user, mock_request):
+    @patch.object(UserController, "get_user", new_callable=AsyncMock)
+    async def test_get_current_user_inactive(self, mock_get_user, mock_authenticate_user, mock_request):
         """Test that `get_current_user` raises a `BadRequestException` when the user is inactive."""
-        mock_authenticate_user.return_value = "user-uuid"
-        mock_get_by_uuid.return_value = AsyncMock(activated=False)
+        mock_authenticate_user.return_value = "a3b8f042-1e16-4f0a-a8f0-421e16df0a2f"
+        mock_get_user.return_value = AsyncMock(activated=False)
 
         credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="fake_access_token")
-
         mock_user_repository = AsyncMock(spec=UserRepository)
-        user_controller = UserController(user_repository=mock_user_repository)
 
+        user_controller = UserController(user_repository=mock_user_repository)
         with pytest.raises(BadRequestException):
             await get_current_user(mock_request, token=credentials, user_controller=user_controller)
 
         mock_authenticate_user.assert_awaited_once_with(token_type="Access", key="uuid", credentials=credentials)
-        mock_get_by_uuid.assert_awaited_once_with(uuid="user-uuid")
+        mock_get_user.assert_awaited_once_with(user_uuid=UUID("a3b8f042-1e16-4f0a-a8f0-421e16df0a2f"))
 
     @patch("core.fastapi.dependencies.authentication.AuthenticationHandler.authenticate_user", new_callable=AsyncMock)
     async def test_get_current_user_with_refresh_token(self, mock_authenticate_user, mock_request):

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import Request
 from fastapi.security import HTTPAuthorizationCredentials
 
@@ -28,7 +30,7 @@ class AuthenticationHandler:
             raise UnauthorizedException(message=_("Invalid token."))
 
     async def authenticate_user(
-        self, token_type: str, key: str, credentials: HTTPAuthorizationCredentials = None
+        self, token_type: str, key: str, credentials: Optional[HTTPAuthorizationCredentials] = None
     ) -> str:
         token = await self._get_token(token_type)
 
