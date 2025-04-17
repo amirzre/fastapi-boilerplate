@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Generic, Sequence, Type, TypeVar
 
 from pydantic import BaseModel
@@ -97,10 +97,26 @@ class BaseRepository(Generic[ModelType]):
 
     async def delete(self, model: ModelType) -> None:
         """
-        Deletes the model.
+        Soft deletes the given model by marking it as deleted rather than removing it from the database.
 
-        :param model: The model to delete.
+        This method sets the `deleted` attribute of the model to the current UTC time using a timezone-aware
+        approach (via datetime.now(timezone.utc)), ensuring consistency and clarity in time handling.
+        It is assumed that the model has a `deleted` attribute.
+
+        :param model (ModelType): The model instance to be soft deleted.
         :return: None
+        """
+        if hasattr(model, "deleted"):
+            setattr(model, "deleted", datetime.now(timezone.utc))
+
+        await self.session.commit()
+
+    async def remove(self, model: ModelType) -> None:
+        """
+        Deletes the model instance.
+
+        :param model: The model instance to delete.
+        :return: None.
         """
         await self.session.delete(model)
         await self.session.commit()
