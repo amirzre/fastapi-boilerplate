@@ -108,8 +108,7 @@ class BaseRepository(Generic[ModelType]):
         """
         if hasattr(model, "deleted"):
             setattr(model, "deleted", datetime.now(timezone.utc))
-
-        await self.session.commit()
+            await self.session.commit()
 
     async def remove(self, model: ModelType) -> None:
         """
@@ -132,8 +131,9 @@ class BaseRepository(Generic[ModelType]):
         :return: A callable that can be used to query the model.
         """
         query = select(self.model_class)
+        if hasattr(self.model_class, "deleted"):
+            query = query.where(getattr(self.model_class, "deleted").is_(None))
         query = self._maybe_ordered(query, order_)
-
         return query
 
     async def _all(self, query: Select) -> Sequence[ModelType]:
