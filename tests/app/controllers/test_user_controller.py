@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 from uuid import uuid4
 
 import pytest
@@ -194,17 +194,35 @@ class TestUserController:
         assert update_call_args["attributes"]["password"] == "new_hashed_password"
         mock_set_acl.assert_called_once_with(resource_id=user_uuid, acl=expected_acl)
 
-    async def test_delete_user_success(self, user_controller, user_repository_mock, mock_user):
+    async def test_delete_user_success(
+        self,
+        user_controller: UserController,
+        user_repository_mock: AsyncMock,
+        mock_user: Mock,
+    ) -> None:
         """Test deleting a user successfully."""
         user_uuid = mock_user.uuid
         expected_acl = [(1, 2, 3)]
+
         user_repository_mock.get_by_uuid.return_value = mock_user
+        mock_user.__acl__.return_value = expected_acl
+        user_repository_mock.delete.return_value = mock_user
 
         with patch.object(ACLRegistry, "set_acl") as mock_set_acl:
-            await user_controller.delete_user(user_uuid=user_uuid)
+            response = await user_controller.delete_user(user_uuid=user_uuid)
 
-        user_repository_mock.delete.assert_called_once_with(model=mock_user)
+        user_repository_mock.get_by_uuid.assert_awaited_once_with(uuid=user_uuid)
+        user_repository_mock.delete.assert_awaited_once_with(model=mock_user)
         mock_set_acl.assert_called_once_with(resource_id=user_uuid, acl=expected_acl)
+
+        assert response == UserResponse(
+            uuid=mock_user.uuid,
+            email=mock_user.email,
+            first_name=mock_user.first_name,
+            last_name=mock_user.last_name,
+            role=mock_user.role,
+            activated=mock_user.activated,
+        )
 
     async def test_delete_user_not_found(self, user_controller, user_repository_mock):
         """Test deleting a user that does not exist."""

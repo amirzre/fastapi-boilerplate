@@ -126,7 +126,7 @@ class UserController(BaseController[User]):
             activated=updated_user.activated,
         )
 
-    async def delete_user(self, *, user_uuid: UUID4) -> None:
+    async def delete_user(self, *, user_uuid: UUID4) -> UserResponse:
         """
         Delete a user by their UUID.
 
@@ -141,4 +141,13 @@ class UserController(BaseController[User]):
         acl = user.__acl__()
         ACLRegistry.set_acl(resource_id=user.uuid, acl=acl)
 
-        return await self.user_repository.delete(model=user)
+        deleted_user = await self.user_repository.delete(model=user)
+
+        return UserResponse(
+            uuid=deleted_user.uuid,
+            email=deleted_user.email,
+            first_name=deleted_user.first_name,
+            last_name=deleted_user.last_name,
+            role=deleted_user.role,
+            activated=deleted_user.activated,
+        )

@@ -104,4 +104,4 @@ async def delete_post(
     """
     post = await post_controller.delete_post(post_uuid=post_id)
     assert_access(resource=post)
-    return post
+    return None

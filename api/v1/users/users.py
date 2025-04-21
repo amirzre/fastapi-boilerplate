@@ -90,4 +90,4 @@ async def delete_user(
     """
     user = await user_controller.delete_user(user_uuid=user_id)
     assert_access(resource=user)
-    return user
+    return None

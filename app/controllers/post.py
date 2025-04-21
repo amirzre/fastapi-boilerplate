@@ -126,7 +126,7 @@ class PostController(BaseController[Post]):
         )
 
     @Transactional()
-    async def delete_post(self, *, post_uuid: UUID4) -> None:
+    async def delete_post(self, *, post_uuid: UUID4) -> PostResponse:
         """
         Delete an existing post by its UUID.
 
@@ -141,4 +141,11 @@ class PostController(BaseController[Post]):
         acl = post.__acl__()
         ACLRegistry.set_acl(resource_id=post.uuid, acl=acl)
 
-        return await self.post_repository.delete(model=post)
+        deleted_post = await self.post_repository.delete(model=post)
+
+        return PostResponse(
+            uuid=deleted_post.uuid,
+            title=deleted_post.title,
+            status=deleted_post.status,
+            user_id=deleted_post.user_id,
+        )

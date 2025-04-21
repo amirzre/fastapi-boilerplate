@@ -95,7 +95,7 @@ class BaseRepository(Generic[ModelType]):
         await self.session.commit()
         return model
 
-    async def delete(self, model: ModelType) -> None:
+    async def delete(self, model: ModelType) -> ModelType:
         """
         Soft deletes the given model by marking it as deleted rather than removing it from the database.
 
@@ -104,11 +104,13 @@ class BaseRepository(Generic[ModelType]):
         It is assumed that the model has a `deleted` attribute.
 
         :param model (ModelType): The model instance to be soft deleted.
-        :return: None
+        :return: The deleted model instance.
         """
         if hasattr(model, "deleted"):
             setattr(model, "deleted", datetime.now(timezone.utc))
             await self.session.commit()
+
+        return model
 
     async def remove(self, model: ModelType) -> None:
         """
