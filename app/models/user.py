@@ -1,11 +1,10 @@
-from enum import auto
+from enum import StrEnum, auto
 
 from sqlalchemy import Boolean, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.db import Base
 from core.db.mixins import IDUUIDMixin, TimestampMixin
-from core.enum import StrEnum
 from core.security import Allow, Everyone, RolePrincipal, UserPrincipal
 
 

@@ -1,6 +1,4 @@
-from enum import auto
-
-from core.enum import StrEnum
+from enum import StrEnum, auto
 
 
 class CacheTag(StrEnum):

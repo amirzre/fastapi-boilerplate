@@ -1,4 +1,4 @@
-from enum import auto
+from enum import StrEnum, auto
 
 from pydantic import UUID4
 from sqlalchemy import UUID, Enum, ForeignKey, String, Text
@@ -7,7 +7,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.user import UserRole
 from core.db import Base
 from core.db.mixins import IDUUIDMixin, TimestampMixin
-from core.enum import StrEnum
 from core.security import Allow, Authenticated, RolePrincipal, UserPrincipal
 
 

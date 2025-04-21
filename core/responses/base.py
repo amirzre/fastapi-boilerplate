@@ -1,10 +1,9 @@
-from enum import auto
+from enum import StrEnum, auto
 from http import HTTPStatus
 from typing import Generic, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
-from core.enum import StrEnum
 from core.i18n import translate as _
 
 T = TypeVar("T")
