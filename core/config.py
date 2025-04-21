@@ -1,12 +1,10 @@
 import json
-from enum import auto
+from enum import StrEnum, auto
 from pathlib import Path
 from secrets import token_urlsafe
 
 from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from core.enum import StrEnum
 
 
 class EnvironmentType(StrEnum):
