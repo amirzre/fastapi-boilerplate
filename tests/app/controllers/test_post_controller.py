@@ -10,6 +10,7 @@ from app.repositories import PostRepository, UserRepository
 from app.schemas.request import CreatePostRequest, PostFilterParams, UpdatePostRequest
 from app.schemas.response import PostResponse
 from core.exceptions import NotFoundException
+from core.security.access_control import ACLRegistry
 
 
 @pytest.mark.asyncio
@@ -191,12 +192,31 @@ class TestPostController:
         post_repository.update.assert_called_once_with(model=mock_post, attributes=update_request)
 
     async def test_delete_post_success(
-        self, post_controller: PostController, post_repository: AsyncMock, mock_uuid: UUID4, mock_post: Mock
+        self,
+        post_controller: PostController,
+        post_repository: AsyncMock,
+        mock_uuid: UUID4,
+        mock_post: Mock,
     ) -> None:
         """Test successful post deletion."""
+        expected_acl = [(1, 2, 3)]
+
         post_repository.get_by_uuid.return_value = mock_post
+        mock_post.uuid = mock_uuid
+        mock_post.__acl__.return_value = expected_acl
+        post_repository.delete.return_value = mock_post
 
-        with patch("core.db.session.session_context", new_callable=AsyncMock):
-            await post_controller.delete_post(post_uuid=mock_uuid)
+        with patch.object(ACLRegistry, "set_acl") as mock_set_acl:
+            with patch("core.db.session.session_context", new_callable=AsyncMock):
+                response = await post_controller.delete_post(post_uuid=mock_uuid)
 
-        post_repository.delete.assert_called_once_with(model=mock_post)
+        post_repository.get_by_uuid.assert_awaited_once_with(uuid=mock_uuid)
+        post_repository.delete.assert_awaited_once_with(model=mock_post)
+        mock_set_acl.assert_called_once_with(resource_id=mock_uuid, acl=expected_acl)
+
+        assert response == PostResponse(
+            uuid=mock_post.uuid,
+            title=mock_post.title,
+            status=mock_post.status,
+            user_id=mock_post.user_id,
+        )
