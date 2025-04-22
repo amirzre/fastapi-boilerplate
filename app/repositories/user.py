@@ -2,7 +2,7 @@ from typing import Sequence
 from uuid import UUID
 
 from app.models import User
-from app.schemas.extra import UserFilterParams
+from app.schemas.request import UserFilterParams
 from core.repository import BaseRepository
 
 

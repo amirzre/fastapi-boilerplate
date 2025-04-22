@@ -2,8 +2,8 @@ from pydantic import UUID4
 
 from app.models import User
 from app.repositories import UserRepository
-from app.schemas.extra import PaginationResponse, UserFilterParams
-from app.schemas.request import RegisterUserRequest, UpdateUserRequest
+from app.schemas.extra import PaginationResponse
+from app.schemas.request import RegisterUserRequest, UpdateUserRequest, UserFilterParams
 from app.schemas.response import UserResponse
 from core.controller import BaseController
 from core.db import Transactional

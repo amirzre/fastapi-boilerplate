@@ -5,8 +5,8 @@ import pytest
 
 from app.controllers import UserController
 from app.models import UserRole
-from app.schemas.extra import PaginationResponse, UserFilterParams
-from app.schemas.request import RegisterUserRequest, UpdateUserRequest
+from app.schemas.extra import PaginationResponse
+from app.schemas.request import RegisterUserRequest, UpdateUserRequest, UserFilterParams
 from app.schemas.response import UserResponse
 from core.exceptions import NotFoundException
 from core.security import ACLRegistry

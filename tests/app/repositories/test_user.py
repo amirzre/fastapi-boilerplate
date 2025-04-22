@@ -5,7 +5,7 @@ import pytest
 
 from app.models import User, UserRole
 from app.repositories import UserRepository
-from app.schemas.extra import UserFilterParams
+from app.schemas.request import UserFilterParams
 
 
 @pytest.mark.asyncio
