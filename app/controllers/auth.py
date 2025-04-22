@@ -5,8 +5,8 @@ from redis.asyncio import client
 
 from app.models import User
 from app.repositories import UserRepository
-from app.schemas.extra import Token
 from app.schemas.request import UserLoginRequest
+from app.schemas.response import TokenResponse
 from core.controller import BaseController
 from core.exceptions import BadRequestException, NotFoundException, UnauthorizedException
 from core.i18n import translate as _
@@ -27,7 +27,7 @@ class AuthController(BaseController[User]):
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
 
-    async def login(self, *, login_user_request: UserLoginRequest, cache: client.Redis) -> Token:
+    async def login(self, *, login_user_request: UserLoginRequest, cache: client.Redis) -> TokenResponse:
         """
         Authenticate a user and generate access, refresh, and CSRF tokens.
 
@@ -52,9 +52,9 @@ class AuthController(BaseController[User]):
 
         await cache.set(name=refresh_token, value=str(user.uuid), ex=JWTHandler.refresh_token_expire)
 
-        return Token(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
 
-    async def refresh_token(self, *, old_refresh_token: str, session_id: str, cache: client.Redis) -> Token:
+    async def refresh_token(self, *, old_refresh_token: str, session_id: str, cache: client.Redis) -> TokenResponse:
         """
         Generate a new access token and refresh token using an existing refresh token.
 
@@ -81,7 +81,7 @@ class AuthController(BaseController[User]):
 
         await asyncio.gather(cache.set(name=refresh_token, value=uuid, ex=ttl), cache.delete(old_refresh_token))
 
-        return Token(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token, csrf_token=csrf_token)
 
     async def logout(self, *, refresh_token: str, cache: client.Redis) -> None:
         """
