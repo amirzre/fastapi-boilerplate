@@ -8,27 +8,29 @@ from core.config import config
 
 class HealthCheckController:
     """
-    Controller for performing health checks on the system's dependencies, including the database and Redis.
+    Controller responsible for performing health checks on core system dependencies,
+    including the database and Redis.
     """
 
     def __init__(self, db: AsyncSession, redis_url: str) -> None:
         """
-        Initialize the HealthCheckController with database and Redis connection details.
+        Initialize the HealthCheckController.
 
-        :param db: Asynchronous database session for executing queries.
-        :param redis_url: URL of the Redis server for health checks.
+        Args:
+            db (AsyncSession): SQLAlchemy asynchronous database session.
+            redis_url (str): Connection URL for the Redis server.
         """
         self.db = db
         self.redis_url = redis_url
 
     async def check_database(self) -> bool:
         """
-        Perform a health check on the database.
+        Check the availability of the database.
 
-        Executes a simple query to ensure the database connection is functional.
+        Executes a lightweight query to verify that the database connection is alive.
 
-        :return: True if the database is reachable and the query succeeds; otherwise, False.
-        :raises Exception: If an error occurs while executing the database query.
+        Returns:
+            bool: True if the database responds correctly; False otherwise.
         """
         try:
             await self.db.execute(text("SELECT 1"))
@@ -38,12 +40,12 @@ class HealthCheckController:
 
     async def check_redis(self) -> bool:
         """
-        Perform a health check on Redis.
+        Check the availability of the Redis server.
 
-        Attempts to ping the Redis server to ensure it is reachable.
+        Uses a ping command to confirm that the Redis server is reachable.
 
-        :return: True if the Redis server responds to the ping; otherwise, False.
-        :raises Exception: If an error occurs while connecting to or pinging the Redis server.
+        Returns:
+            bool: True if Redis is reachable and responds to ping; False otherwise.
         """
         try:
             redis_pool = redis.ConnectionPool.from_url(str(config.REDIS_URL), decode_responses=True)
@@ -56,11 +58,10 @@ class HealthCheckController:
 
     async def health_check(self) -> HealthCheckResponse:
         """
-        Perform a health check for all system dependencies.
+        Run health checks for all major dependencies.
 
-        Checks the health of both the database and Redis, and returns their status.
-
-        :return: An instance of HealthCheckResponse containing the health status of the database and Redis.
+        Returns:
+            HealthCheckResponse: Object containing the health status of the database and Redis.
         """
         database = await self.check_database()
         redis = await self.check_redis()

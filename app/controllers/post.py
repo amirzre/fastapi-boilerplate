@@ -13,14 +13,17 @@ from core.security import ACLRegistry
 
 
 class PostController(BaseController[Post]):
-    """Post controller provides all the logic operations for the Post model."""
+    """
+    Controller responsible for handling business logic related to the Post model.
+    """
 
     def __init__(self, post_repository: PostRepository, user_repository: UserRepository):
         """
-        Initialize the PostController with the required repositories.
+        Initialize the PostController with necessary repositories.
 
-        :param post_repository: Repository for handling Post model operations.
-        :param user_repository: Repository for handling User model operations.
+        Args:
+            post_repository (PostRepository): Repository for Post model operations.
+            user_repository (UserRepository): Repository for User model operations.
         """
         super().__init__(model=Post, repository=post_repository)
         self.post_repository = post_repository
@@ -30,12 +33,17 @@ class PostController(BaseController[Post]):
         self, *, user_id: UUID4, filter_params: PostFilterParams
     ) -> PaginationResponse[PostResponse]:
         """
-        Retrieve all posts created by a specific user with optional filters.
+        Retrieve posts created by a specific user, optionally filtered and paginated.
 
-        :param user_id: UUID of the user whose posts are to be retrieved.
-        :param filter_params: Filters for pagination, title, status, and timestamps.
-        :return: A pagination response containing the user's posts.
-        :raises NotFoundException: If the user with the given UUID does not exist.
+        Args:
+            user_id (UUID4): UUID of the user whose posts are to be fetched.
+            filter_params (PostFilterParams): Filters for pagination, title, status, and timestamps.
+
+        Returns:
+            PaginationResponse[PostResponse]: Paginated list of post responses.
+
+        Raises:
+            NotFoundException: If the specified user does not exist.
         """
         user = await self.user_repository.get_by_uuid(uuid=user_id)
         if not user:
@@ -56,9 +64,14 @@ class PostController(BaseController[Post]):
         """
         Retrieve a single post by its UUID.
 
-        :param post_uuid: UUID of the post to be retrieved.
-        :return: A response object containing post details.
-        :raises NotFoundException: If the post with the given UUID does not exist.
+        Args:
+            post_uuid (UUID4): UUID of the post to retrieve.
+
+        Returns:
+            PostResponse: Post data in response format.
+
+        Raises:
+            NotFoundException: If the post does not exist.
         """
         post = await self.post_repository.get_by_uuid(uuid=post_uuid)
         if not post:
@@ -77,11 +90,16 @@ class PostController(BaseController[Post]):
     @Transactional()
     async def create_post(self, *, create_post_request: CreatePostRequest) -> PostResponse:
         """
-        Create a new post for a specific user.
+        Create a new post.
 
-        :param create_post_request: Request object containing post details and the user UUID.
-        :return: A response object containing details of the newly created post.
-        :raises NotFoundException: If the user with the given UUID does not exist.
+        Args:
+            create_post_request (CreatePostRequest): Input data for creating the post.
+
+        Returns:
+            PostResponse: Created post response.
+
+        Raises:
+            NotFoundException: If the associated user does not exist.
         """
         user = await self.user_repository.get_by_uuid(uuid=create_post_request.user_id)
         if not user:
@@ -102,12 +120,17 @@ class PostController(BaseController[Post]):
     @Transactional()
     async def update_post(self, *, post_uuid: UUID4, update_post_request: UpdatePostRequest) -> PostResponse:
         """
-        Update an existing post by its UUID.
+        Update an existing post.
 
-        :param post_uuid: UUID of the post to be updated.
-        :param update_post_request: Request object containing the updated post details.
-        :return: A response object containing the updated post details.
-        :raises NotFoundException: If the post with the given UUID does not exist.
+        Args:
+            post_uuid (UUID4): UUID of the post to update.
+            update_post_request (UpdatePostRequest): Fields to update in the post.
+
+        Returns:
+            PostResponse: Updated post response.
+
+        Raises:
+            NotFoundException: If the post does not exist.
         """
         post = await self.post_repository.get_by_uuid(uuid=post_uuid)
         if not post:
@@ -128,11 +151,16 @@ class PostController(BaseController[Post]):
     @Transactional()
     async def delete_post(self, *, post_uuid: UUID4) -> PostResponse:
         """
-        Delete an existing post by its UUID.
+        Delete a post by its UUID.
 
-        :param post_uuid: UUID of the post to be deleted.
-        :return: None.
-        :raises NotFoundException: If the post with the given UUID does not exist.
+        Args:
+            post_uuid (UUID4): UUID of the post to delete.
+
+        Returns:
+            PostResponse: Deleted post response.
+
+        Raises:
+            NotFoundException: If the post does not exist.
         """
         post = await self.post_repository.get_by_uuid(uuid=post_uuid)
         if not post:
