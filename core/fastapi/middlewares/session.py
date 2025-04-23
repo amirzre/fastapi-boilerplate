@@ -7,6 +7,11 @@ from core.config import config
 
 
 class SessionMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware that ensures each request has a unique session ID stored in cookies.
+    If a session ID does not exist, it generates and sets a new one.
+    """
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         session_id = request.cookies.get("Session-Id")
         if not session_id:

@@ -24,7 +24,11 @@ async def get_users(
     user_controller: UserController = Depends(Factory().get_user_controller),
 ) -> APIResponseType[PaginationResponse[UserResponse]]:
     """
-    Retrieve users.
+    Get a paginated list of users.
+
+    - **filterable by**: email, role, active status, creation/update date
+    - **permissions required**: Admin
+    - **response**: Paginated list of users with metadata
     """
     users = await user_controller.get_users(filter_params=filter_params)
     return APIResponse(users)
@@ -38,7 +42,11 @@ async def get_user(
     assert_access: Callable = Depends(Permissions(UserPermission.READ)),
 ) -> APIResponseType[UserResponse]:
     """
-    Retrieve user by ID.
+    Get details of a specific user by ID.
+
+    - **path parameter**: `user_id` (UUID)
+    - **permissions required**: Authenticated + `user:read`
+    - **response**: User object
     """
     user = await user_controller.get_user(user_uuid=user_id)
     assert_access(resource=user)
@@ -52,7 +60,10 @@ async def register_user(
     user_controller: UserController = Depends(Factory().get_user_controller),
 ) -> APIResponseType[UserResponse]:
     """
-    Register new user.
+    Register a new user.
+
+    - **request body**: User registration schema
+    - **response**: Created user with assigned roles and permissions
     """
     user = await user_controller.register_user(register_user_request=register_user_request)
     return APIResponse(user)
@@ -67,7 +78,12 @@ async def update_user(
     assert_access: Callable = Depends(Permissions(UserPermission.UPDATE)),
 ) -> APIResponseType[UserResponse]:
     """
-    Update a user.
+    Update user details by ID.
+
+    - **path parameter**: `user_id` (UUID)
+    - **request body**: Updated user fields
+    - **permissions required**: Authenticated + `user:update`
+    - **response**: Updated user object
     """
     user = await user_controller.update_user(user_uuid=user_id, update_user_request=update_user_request)
     assert_access(resource=user)
@@ -86,7 +102,11 @@ async def delete_user(
     assert_access: Callable = Depends(Permissions(UserPermission.DELETE)),
 ) -> None:
     """
-    Delete a user.
+    Delete a user by ID.
+
+    - **path parameter**: `user_id` (UUID)
+    - **permissions required**: Authenticated + `user:delete`
+    - **response**: 204 No Content if successful
     """
     user = await user_controller.delete_user(user_uuid=user_id)
     assert_access(resource=user)

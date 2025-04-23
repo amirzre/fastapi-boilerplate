@@ -6,6 +6,11 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 
 class ResponseInfo(BaseModel):
+    """
+    Stores response metadata such as headers, body, and status code
+    for logging and inspection purposes.
+    """
+
     headers: Optional[Headers] = Field(default=None, title="Response header")
     body: str = Field(default="", title="Body")
     status_code: Optional[int] = Field(default=None, title="Status code")
@@ -14,6 +19,11 @@ class ResponseInfo(BaseModel):
 
 
 class ResponseLoggerMiddleware:
+    """
+    Middleware for logging HTTP responses.
+    Captures headers, body content, and status code for each response.
+    """
+
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 

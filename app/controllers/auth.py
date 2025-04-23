@@ -15,26 +15,33 @@ from core.security import JWTHandler, PasswordHandler
 
 class AuthController(BaseController[User]):
     """
-    Auth controller provides all the logic operations for the user authentication.
+    Controller responsible for handling user authentication processes,
+    including login, token refresh, and logout operations.
     """
 
     def __init__(self, user_repository: UserRepository):
         """
-        Initialize the AuthController with the required repository.
+        Initialize the AuthController with the specified user repository.
 
-        :param user_repository: Repository for handling User model operations.
+        Args:
+            user_repository (UserRepository): Repository instance for user data operations.
         """
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
 
     async def login(self, *, login_user_request: UserLoginRequest, cache: client.Redis) -> TokenResponse:
         """
-        Authenticate a user and generate access, refresh, and CSRF tokens.
+        Authenticate a user using provided credentials and issue authentication tokens.
 
-        :param login_user_request: Request object containing the user's email and password.
-        :param cache: Redis client for storing the refresh token.
-        :return: A Token object containing access, refresh, and CSRF tokens.
-        :raises BadRequestException: If the user's credentials are invalid or the user is inactive.
+        Args:
+            login_user_request (UserLoginRequest): Object containing user's email and password.
+            cache (client.Redis): Redis client instance for token storage.
+
+        Returns:
+            TokenResponse: Object containing access token, refresh token, and CSRF token.
+
+        Raises:
+            BadRequestException: If credentials are invalid or user is inactive.
         """
         user = await self.user_repository.get_by_email(email=login_user_request.email)
         if not user:
@@ -56,14 +63,19 @@ class AuthController(BaseController[User]):
 
     async def refresh_token(self, *, old_refresh_token: str, session_id: str, cache: client.Redis) -> TokenResponse:
         """
-        Generate a new access token and refresh token using an existing refresh token.
+        Refresh authentication tokens using an existing refresh token and session ID.
 
-        :param old_refresh_token: The existing refresh token to be refreshed.
-        :param session_id: The session identifier associated with the user.
-        :param cache: Redis client for managing tokens.
-        :return: A Token object containing new access, refresh, and CSRF tokens.
-        :raises UnauthorizedException: If the refresh token or session ID is invalid.
-        :raises NotFoundException: If the user associated with the refresh token is not found.
+        Args:
+            old_refresh_token (str): The existing refresh token to be replaced.
+            session_id (str): Identifier for the user's session.
+            cache (client.Redis): Redis client instance for token management.
+
+        Returns:
+            TokenResponse: Object containing new access token, refresh token, and CSRF token.
+
+        Raises:
+            UnauthorizedException: If the refresh token or session ID is invalid.
+            NotFoundException: If the user associated with the token is not found.
         """
         uuid, ttl = await asyncio.gather(cache.get(old_refresh_token), cache.ttl(old_refresh_token))
         if not uuid or not session_id:
@@ -85,14 +97,17 @@ class AuthController(BaseController[User]):
 
     async def logout(self, *, refresh_token: str, cache: client.Redis) -> None:
         """
-        Log out a user by deleting their refresh token from the cache.
+        Log out a user by removing their refresh token from the cache.
 
-        :param refresh_token: The refresh token to be deleted.
-        :param cache: Redis client for managing tokens.
-        :return: None.
-        :raises NotFoundException: If the refresh token is not provided.
+        Args:
+            refresh_token (str): The refresh token to be invalidated.
+            cache (client.Redis): Redis client instance for token management.
+
+        Raises:
+            NotFoundException: If the refresh token is not provided.
         """
         if not refresh_token:
             raise NotFoundException(message=_("Refresh token not found."))
         await cache.delete(refresh_token)
+
         return None

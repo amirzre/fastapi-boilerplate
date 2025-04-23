@@ -8,14 +8,19 @@ from core.repository import BaseRepository
 
 
 class PostRepository(BaseRepository[Post]):
-    """Post repository provides all the database operations for the Post model."""
+    """
+    Repository class that handles all database operations related to the Post model.
+    """
 
     async def get_by_uuid(self, uuid: UUID4) -> Post | None:
         """
-        Get Post by UUID.
+        Retrieve a post by its UUID.
 
-        param uuid: Post UUID.
-        return: Post or None.
+        Args:
+            uuid (UUID4): The UUID of the post to retrieve.
+
+        Returns:
+            Post | None: The post instance if found; otherwise, None.
         """
         query = self._query()
         query = query.filter(Post.uuid == uuid)
@@ -24,11 +29,14 @@ class PostRepository(BaseRepository[Post]):
 
     async def get_posts_by_user(self, user_id: UUID4, filter_params: PostFilterParams) -> tuple[Sequence[Post], int]:
         """
-        Get Posts by User ID with optional filters and return the total count.
+        Retrieve posts created by a specific user, with optional filtering and pagination.
 
-        :param user_id: User ID.
-        :param filter_params: Post filter parameters.
-        :return: A tuple of list of posts and the total count of matching posts.
+        Args:
+            user_id (UUID4): UUID of the user whose posts are to be retrieved.
+            filter_params (PostFilterParams): Filtering and pagination parameters.
+
+        Returns:
+            tuple[Sequence[Post], int]: A tuple containing the list of filtered posts and the total count.
         """
         query = self._query().filter(Post.user_id == user_id)
 

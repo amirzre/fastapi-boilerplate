@@ -8,15 +8,18 @@ from core.repository import BaseRepository
 
 class UserRepository(BaseRepository[User]):
     """
-    User repository provides all the database operations for the User model.
+    Repository class that handles all database operations for the User model.
     """
 
     async def get_by_email(self, email: str) -> User | None:
         """
-        Get user by email.
+        Retrieve a user by email address.
 
-        :param email: Email.
-        :return: User.
+        Args:
+            email (str): The user's email address.
+
+        Returns:
+            User | None: The user instance if found; otherwise, None.
         """
         query = self._query()
         query = query.filter(User.email == email)
@@ -25,10 +28,13 @@ class UserRepository(BaseRepository[User]):
 
     async def get_by_uuid(self, uuid: UUID) -> User | None:
         """
-        Get user by uuid.
+        Retrieve a user by UUID.
 
-        :param uuid: User uuid.
-        :return: User.
+        Args:
+            uuid (UUID): The UUID of the user.
+
+        Returns:
+            User | None: The user instance if found; otherwise, None.
         """
         query = self._query()
         query = query.filter(User.uuid == uuid)
@@ -37,10 +43,13 @@ class UserRepository(BaseRepository[User]):
 
     async def get_filtered_users(self, filter_params: UserFilterParams) -> tuple[Sequence[User], int]:
         """
-        Get users by filter and return the total count.
+        Retrieve a list of users filtered by the provided parameters, with pagination support.
 
-        :param filter_params: user filter parameters.
-        :return: a tuple of list of users and the total count of matching users.
+        Args:
+            filter_params (UserFilterParams): Filtering and pagination parameters.
+
+        Returns:
+            tuple[Sequence[User], int]: A tuple containing a list of matching users and the total count.
         """
         query = self._query()
 
