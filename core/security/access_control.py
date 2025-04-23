@@ -20,6 +20,10 @@ T = TypeVar("T")
 
 @dataclass(frozen=True)
 class Principal:
+    """
+    Represents a principal (user, role, system, etc.) used in ACLs.
+    """
+
     key: str
     value: str
 
@@ -32,43 +36,69 @@ class Principal:
 
 @dataclass(frozen=True)
 class SystemPrincipal(Principal):
+    """
+    Represents a system-wide principal such as 'everyone' or 'authenticated'.
+    """
+
     def __init__(self, value: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(key="system", value=value, *args, **kwargs)
 
 
 @dataclass(frozen=True)
 class UserPrincipal(Principal):
+    """
+    Represents a user-specific principal.
+    """
+
     def __init__(self, value: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(key="user", value=value, *args, **kwargs)
 
 
 @dataclass(frozen=True)
 class RolePrincipal(Principal):
+    """
+    Represents a role-specific principal.
+    """
+
     def __init__(self, value: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(key="role", value=value, *args, **kwargs)
 
 
 @dataclass(frozen=True)
 class PostPrincipal(Principal):
+    """
+    Represents a post-specific principal (custom use case).
+    """
+
     def __init__(self, value: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(key="post", value=value, *args, **kwargs)
 
 
 @dataclass(frozen=True)
 class ActionPrincipal(Principal):
+    """
+    Represents an action-specific principal (custom use case).
+    """
+
     def __init__(self, value: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(key="action", value=value, *args, **kwargs)
 
 
 class ACLRegistry:
+    """
+    Registry to hold ACLs for resources using their UUID or integer IDs.
+    """
+
     _acl_map: dict[Union[UUID4, int], ACLList] = {}
 
     @classmethod
     def set_acl(cls, resource_id: Union[UUID4, int], acl: ACLList) -> None:
+        """Set ACL for a specific resource."""
         cls._acl_map[resource_id] = acl
 
     @classmethod
     def get_acl(cls, resource_id: Union[UUID4, int]) -> ACLList:
+        """Retrieve ACL for a specific resource."""
         return cls._acl_map.get(resource_id, [])
 
 
@@ -77,6 +107,10 @@ Authenticated = SystemPrincipal(value="authenticated")
 
 
 class AllowAll:
+    """
+    A container that allows all access. Used in permissive configurations.
+    """
+
     def __contains__(self, item: Any) -> bool:
         return True
 
@@ -88,15 +122,30 @@ class AllowAll:
 
 
 class AccessControl:
+    """
+    Class for enforcing permission checks based on defined ACLs.
+    """
+
     def __init__(
         self,
         user_principals_getter: Any,
         permission_exception: Any = DefaultException,
     ) -> None:
+        """
+        Initialize AccessControl.
+
+        Args:
+            user_principals_getter: A dependency that returns a list of principals for the current user.
+            permission_exception: The exception to raise on access denial.
+        """
         self.user_principals_getter = user_principals_getter
         self.permission_exception = permission_exception
 
     def __call__(self, permissions: Union[str, List[str]]):
+        """
+        Return a FastAPI dependency to enforce permission checks.
+        """
+
         def _permission_dependency(principals=Depends(self.user_principals_getter)):
             assert_access = functools.partial(self.assert_access, principals, permissions)
             return assert_access
@@ -104,6 +153,12 @@ class AccessControl:
         return _permission_dependency
 
     def assert_access(self, principals: List[Principal], permissions: Union[str, List[str]], resource: Any) -> None:
+        """
+        Assert that the user has permission to access the resource.
+
+        Raises:
+            HTTPException: If access is not permitted.
+        """
         if not self.has_permission(
             principals=principals,
             required_permissions=permissions,
@@ -114,6 +169,9 @@ class AccessControl:
     def has_permission(
         self, principals: List[Principal], required_permissions: Union[str, List[str]], resource: Any
     ) -> bool:
+        """
+        Check if the given principals have the required permissions for the resource.
+        """
         if not isinstance(resource, list):
             resource = [resource]
 
@@ -142,6 +200,9 @@ class AccessControl:
         return all(permits)
 
     def show_permissions(self, principals: List[Principal], resource: Any) -> List[str]:
+        """
+        Show a list of permissions granted to the given principals for the resource.
+        """
         if not isinstance(resource, list):
             resource = [resource]
 
@@ -168,6 +229,9 @@ class AccessControl:
         return []
 
     def _acl(self, resource: Any) -> ACLList:
+        """
+        Extract ACL from the resource, checking for __acl__ or using the ACLRegistry.
+        """
         if hasattr(resource, "__acl__"):
             acl = resource.__acl__
             if callable(acl):
@@ -181,6 +245,9 @@ class AccessControl:
         return []
 
     def _flatten(self, any_list: List[Any]) -> List[Any]:
+        """
+        Recursively flatten a nested list.
+        """
         flat_list: List[Any] = []
         for element in any_list:
             if isinstance(element, list):

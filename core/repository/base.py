@@ -12,19 +12,33 @@ ModelType = TypeVar("ModelType", bound=Base)
 
 
 class BaseRepository(Generic[ModelType]):
-    """Base class for data repositories."""
+    """
+    Generic base class for asynchronous database repositories using SQLAlchemy.
+
+    Provides common CRUD operations and utilities for handling model instances.
+    """
 
     def __init__(self, model: Type[ModelType], db_session: AsyncSession):
+        """
+        Initialize the repository.
+
+        Args:
+            model: The SQLAlchemy model class.
+            db_session: The asynchronous database session.
+        """
         self.session = db_session
         self.model_class: Type[ModelType] = model
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[ModelType]:
         """
-        Returns a list of model instances.
+        Retrieve all model instances with pagination.
 
-        :param skip: The number of records to skip.
-        :param limit: The number of record to return.
-        :return: A list of model instances.
+        Args:
+            skip: Number of records to skip.
+            limit: Maximum number of records to return.
+
+        Returns:
+            A list of model instances.
         """
         query = self._query()
         query = query.offset(skip).limit(limit)
@@ -38,11 +52,15 @@ class BaseRepository(Generic[ModelType]):
         unique: bool = False,
     ) -> ModelType | Sequence[ModelType]:
         """
-        Returns the model instance matching the field and value.
+        Retrieve model instances matching a field and value.
 
-        :param field: The field to match.
-        :param value: The value to match.
-        :return: The model instance.
+        Args:
+            field: Field name to filter by.
+            value: Value to match against the field.
+            unique: If True, return a single instance; otherwise, return all matching instances.
+
+        Returns:
+            A single model instance or a list of model instances.
         """
         query = self._query()
         query = await self._get_by(query, field, value)
@@ -54,10 +72,13 @@ class BaseRepository(Generic[ModelType]):
 
     async def create(self, attributes: dict[str, Any] | BaseModel) -> ModelType:
         """
-        Creates the model instance.
+        Create a new model instance.
 
-        :param attributes: The Pydantic model or dictionary of attributes to create the model with.
-        :return: The created model instance.
+        Args:
+            attributes: Dictionary or Pydantic model containing the attributes.
+
+        Returns:
+            The created model instance.
         """
         data = attributes.model_dump(exclude_unset=True) if isinstance(attributes, BaseModel) else attributes
 
@@ -73,11 +94,14 @@ class BaseRepository(Generic[ModelType]):
 
     async def update(self, model: ModelType, attributes: dict[str, Any] | BaseModel) -> ModelType:
         """
-        Updates the model instance with the given attributes.
+        Update an existing model instance.
 
-        :param model: The model instance to update.
-        :param attributes: A Pydantic model or dictionary of attributes to update the model with.
-        :return: The updated model instance.
+        Args:
+            model: The model instance to update.
+            attributes: Dictionary or Pydantic model containing updated fields.
+
+        Returns:
+            The updated model instance.
         """
         if attributes:
             data = attributes.model_dump(exclude_unset=True) if isinstance(attributes, BaseModel) else attributes
@@ -97,14 +121,13 @@ class BaseRepository(Generic[ModelType]):
 
     async def delete(self, model: ModelType) -> ModelType:
         """
-        Soft deletes the given model by marking it as deleted rather than removing it from the database.
+        Soft delete a model instance by setting the `deleted` timestamp.
 
-        This method sets the `deleted` attribute of the model to the current UTC time using a timezone-aware
-        approach (via datetime.now(timezone.utc)), ensuring consistency and clarity in time handling.
-        It is assumed that the model has a `deleted` attribute.
+        Args:
+            model: The model instance to soft delete.
 
-        :param model (ModelType): The model instance to be soft deleted.
-        :return: The deleted model instance.
+        Returns:
+            The soft-deleted model instance.
         """
         if hasattr(model, "deleted"):
             setattr(model, "deleted", datetime.now(timezone.utc))
@@ -114,10 +137,10 @@ class BaseRepository(Generic[ModelType]):
 
     async def remove(self, model: ModelType) -> None:
         """
-        Deletes the model instance.
+        Permanently delete a model instance.
 
-        :param model: The model instance to delete.
-        :return: None.
+        Args:
+            model: The model instance to delete.
         """
         await self.session.delete(model)
         await self.session.commit()
@@ -127,10 +150,13 @@ class BaseRepository(Generic[ModelType]):
         order_: dict | None = None,
     ) -> Select:
         """
-        Returns a callable that can be used to query the model.
+        Construct a base SELECT query for the model.
 
-        :param order_: The order of the results. (e.g desc, asc)
-        :return: A callable that can be used to query the model.
+        Args:
+            order_: Optional dictionary specifying order clauses.
+
+        Returns:
+            A SQLAlchemy Select object.
         """
         query = select(self.model_class)
         if hasattr(self.model_class, "deleted"):
@@ -140,48 +166,81 @@ class BaseRepository(Generic[ModelType]):
 
     async def _all(self, query: Select) -> Sequence[ModelType]:
         """
-        Returns all results from the query.
+        Execute a query and return all results.
 
-        :param query: The query to execute.
-        :return: A list of model instances.
+        Args:
+            query: The SELECT query to execute.
+
+        Returns:
+            A list of model instances.
         """
         result: ScalarResult[ModelType] = await self.session.scalars(query)
         return result.all()
 
     async def _all_unique(self, query: Select) -> Sequence[ModelType]:
+        """
+        Execute a query and return all unique results.
+
+        Args:
+            query: The SELECT query to execute.
+
+        Returns:
+            A list of unique model instances.
+        """
         result = await self.session.execute(query)
         return result.unique().scalars().all()
 
     async def _first(self, query: Select) -> ModelType | None:
         """
-        Returns the first result from the query.
+        Execute a query and return the first result.
 
-        :param query: The query to execute.
-        :return: The first model instance.
+        Args:
+            query: The SELECT query to execute.
+
+        Returns:
+            The first model instance or None.
         """
         result: ScalarResult[ModelType] = await self.session.scalars(query)
         return result.first()
 
     async def _one_or_none(self, query: Select) -> ModelType | None:
-        """Returns the first result from the query or None."""
+        """
+        Execute a query and return exactly one or no result.
+
+        Args:
+            query: The SELECT query to execute.
+
+        Returns:
+            The matched model instance or None.
+        """
         result: ScalarResult[ModelType] = await self.session.scalars(query)
         return result.one_or_none()
 
     async def _one(self, query: Select) -> ModelType:
         """
-        Returns the first result from the query or raises NoResultFound.
+        Execute a query and return exactly one result.
 
-        :param query: The query to execute.
-        :return: The first model instance.
+        Raises:
+            NoResultFound: If no matching result is found.
+
+        Args:
+            query: The SELECT query to execute.
+
+        Returns:
+            The matched model instance.
         """
         result: ScalarResult[ModelType] = await self.session.scalars(query)
         return result.one()
 
     async def _count(self, query: Select) -> int:
         """
-        Returns the count of the records.
-        :param query: The query to execute.
-        :return: Count of records as integer.
+        Count the number of results returned by a query.
+
+        Args:
+            query: The SELECT query to execute.
+
+        Returns:
+            The count of matching records.
         """
         subquery: Subquery = query.subquery()
         count_query = select(func.count()).select_from(subquery)
@@ -197,14 +256,17 @@ class BaseRepository(Generic[ModelType]):
         case_insensitive: bool = False,
     ) -> Select:
         """
-        Returns the query sorted by the given column.
+        Sort a query by the specified column.
 
-        :param query: The query to sort.
-        :param sort_by: The column to sort by.
-        :param order: The order to sort by.
-        :param model: The model to sort.
-        :param case_insensitive: Whether to sort case insensitively.
-        :return: The sorted query.
+        Args:
+            query: The SELECT query to sort.
+            sort_by: The column name to sort by.
+            order: 'asc' or 'desc'.
+            model: Optional model to use for attribute lookup.
+            case_insensitive: If True, apply case-insensitive sorting.
+
+        Returns:
+            The sorted query.
         """
         model = model or self.model_class
 
@@ -222,22 +284,28 @@ class BaseRepository(Generic[ModelType]):
 
     async def _get_by(self, query: Select, field: str, value: Any) -> Select:
         """
-        Returns the query filtered by the given column.
+        Filter a query by a field and value.
 
-        :param query: The query to filter.
-        :param field: The column to filter by.
-        :param value: The value to filter by.
-        :return: The filtered query.
+        Args:
+            query: The SELECT query to filter.
+            field: Field name to filter by.
+            value: Value to match.
+
+        Returns:
+            The filtered query.
         """
         return query.where(getattr(self.model_class, field) == value)
 
     def _maybe_ordered(self, query: Select, order_: dict | None = None) -> Select:
         """
-        Returns the query ordered by the given column.
+        Apply ordering to a query if order parameters are provided.
 
-        :param query: The query to order.
-        :param order_: The order to make.
-        :return: The query ordered by the given column.
+        Args:
+            query: The SELECT query to order.
+            order_: Dictionary with 'asc' and/or 'desc' order keys.
+
+        Returns:
+            The ordered query.
         """
         if order_:
             if order_["asc"]:
