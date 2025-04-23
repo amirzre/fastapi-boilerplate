@@ -67,3 +67,22 @@ test: ## Run the test suite
 	$(eval export $(sh sed 's/=.*//' .env))
 
 	poetry run pytest -vv -s --cache-clear ./
+
+.PHONY: help
+help: ## Show this help message
+	@echo "Available commands:"
+	@echo ""
+	@echo "install            	Install dependencies"
+	@echo "run                	Start the server"
+	@echo "start              	Starts the server"
+	@echo "migrate            	Run the migrations"
+	@echo "rollback           	Rollback migrations one level"
+	@echo "reset-database     	Rollback all migrations"
+	@echo "generate-migration 	Generate a new migration"
+	@echo "celery-worker      	Start celery worker"
+	@echo "format             	Run code formatter"
+	@echo "lint               	Run code linter"
+	@echo "check-lockfile     	Compares lock file with pyproject.toml"
+	@echo "test               	Run the test suite"
+	@echo ""
+	@echo "For more information, run 'make <command>'"
