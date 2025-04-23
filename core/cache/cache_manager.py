@@ -13,6 +13,7 @@ class CacheManager:
     for functions using decorators. Supports caching with tags or prefixes and
     integrates with the specified backend and key maker.
     """
+
     def __init__(self):
         """
         Initializes the CacheManager with optional backend and key maker.

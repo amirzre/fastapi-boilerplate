@@ -25,7 +25,15 @@ async def login(
     auth_controller: AuthController = Depends(Factory().get_auth_controller),
 ) -> None:
     """
-    Login user.
+    Authenticate a user and return access and refresh tokens as cookies.
+
+    This endpoint sets `Access-Token`, `Refresh-Token`, and `X-CSRF-TOKEN`
+    headers for the authenticated session.
+
+    - **Response Cookies**:
+        - `Access-Token`: Short-lived access token.
+        - `Refresh-Token`: Long-lived refresh token.
+        - `X-CSRF-TOKEN`: Token for CSRF protection.
     """
     tokens = await auth_controller.login(
         login_user_request=login_user_request,
@@ -61,7 +69,19 @@ async def refresh_token(
     auth_controller: AuthController = Depends(Factory().get_auth_controller),
 ) -> None:
     """
-    Retrieve new access and refresh token.
+    Refresh expired access token using a valid refresh token.
+
+    This endpoint validates the refresh token from the cookie,
+    generates new tokens, and sets them in response cookies.
+
+    - **Request Cookies**:
+        - `Refresh-Token`: Required refresh token.
+        - `Session-Id`: Session identifier.
+
+    - **Response Cookies**:
+        - `Access-Token`: New access token.
+        - `Refresh-Token`: New refresh token.
+        - `X-CSRF-TOKEN`: New CSRF token.
     """
     tokens = await auth_controller.refresh_token(
         old_refresh_token=request.cookies.get("Refresh-Token", ""),
@@ -91,7 +111,9 @@ async def refresh_token(
 @auth_router.get("/me", status_code=status.HTTP_200_OK)
 async def me(user: UserResponse = Depends(get_current_user)) -> APIResponseType[UserResponse]:
     """
-    Retrieve current user information.
+    Retrieve information about the currently authenticated user.
+
+    Returns the authenticated user's UUID, email, name, role, and activation status.
     """
     user = UserResponse(
         uuid=user.uuid,
@@ -112,7 +134,12 @@ async def logout(
     auth_controller: AuthController = Depends(Factory().get_auth_controller),
 ) -> None:
     """
-    Logout user.
+    Logout the current user and clear authentication cookies.
+
+    - **Clears Cookies**:
+        - `Access-Token`
+        - `Refresh-Token`
+        - `Session-Id`
     """
     await auth_controller.logout(
         refresh_token=request.cookies.get("Refresh-Token", ""),

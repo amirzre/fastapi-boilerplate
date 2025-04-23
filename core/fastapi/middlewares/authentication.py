@@ -13,6 +13,7 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
     If the token is valid, user information is attached to the request state.
     If the token is missing or invalid, an UnauthorizedException is raised.
     """
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         token = request.cookies.get("Access-Token")
         if token:

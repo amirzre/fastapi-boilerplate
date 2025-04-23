@@ -27,7 +27,11 @@ async def get_user_posts(
     assert_access: Callable = Depends(Permissions(PostPermission.READ)),
 ) -> APIResponseType[PaginationResponse[PostResponse]]:
     """
-    Retrieve user posts.
+    Retrieve a paginated list of posts created by a specific user.
+
+    - **user_id**: `UUID` of the user whose posts are to be fetched.
+    - **filter_params**: Optional query parameters for filtering and pagination.
+    - **Permissions**: Requires `authentication` and `read` access to the resource.
     """
     posts = await post_controller.get_user_posts(user_id=user_id, filter_params=filter_params)
     assert_access(resource=posts)
@@ -45,7 +49,10 @@ async def get_post(
     assert_access: Callable = Depends(Permissions(PostPermission.READ)),
 ) -> APIResponseType[PostResponse]:
     """
-    Retrieve post by UUID.
+    Retrieve a single post by its UUID.
+
+    - **post_id**: `UUID` of the post to retrieve.
+    - **Permissions**: Requires `authentication` and `read` access to the post.
     """
     post = await post_controller.get_post(post_uuid=post_id)
     assert_access(resource=post)
@@ -63,7 +70,10 @@ async def create_post(
     assert_access: Callable = Depends(Permissions(PostPermission.CREATE)),
 ) -> APIResponseType[PostResponse]:
     """
-    Create new post.
+    Create a new post.
+
+    - **create_post_request**: Request body containing post data (title, content, etc.).
+    - **Permissions**: Requires `authentication` and `create` permission.
     """
     post = await post_controller.create_post(create_post_request=create_post_request)
     assert_access(resource=post)
@@ -82,7 +92,11 @@ async def update_post(
     assert_access: Callable = Depends(Permissions(PostPermission.UPDATE)),
 ) -> APIResponseType[PostResponse]:
     """
-    Update a post.
+    Update an existing post by its UUID.
+
+    - **post_id**: `UUID` of the post to update.
+    - **update_post_request**: Request body with updated post data.
+    - **Permissions**: Requires `authentication` and `update` permission.
     """
     post = await post_controller.update_post(post_uuid=post_id, update_post_request=update_post_request)
     assert_access(resource=post)
@@ -100,7 +114,10 @@ async def delete_post(
     assert_access: Callable = Depends(Permissions(PostPermission.DELETE)),
 ) -> None:
     """
-    Delete a post.
+    Delete a post by its UUID.
+
+    - **post_id**: `UUID` of the post to delete.
+    - **Permissions**: Requires `authentication` and `delete` permission.
     """
     post = await post_controller.delete_post(post_uuid=post_id)
     assert_access(resource=post)
