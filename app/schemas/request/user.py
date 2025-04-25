@@ -26,7 +26,7 @@ class UpdateUserRequest(BaseModel):
 class UserFilterParams(BaseFilterParams):
     email: EmailStr | None = Field(None)
     role: UserRole | None = Field(None)
-    activated: bool = Field(None)
+    activated: bool = Field(True)
     created_from: datetime | None = Field(None)
     created_to: datetime | None = Field(None)
     updated_from: datetime | None = Field(None)
