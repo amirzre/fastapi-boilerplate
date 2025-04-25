@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.12", "3.13"]
 
     services:
       postgres:
@@ -49,14 +49,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
+      
+      - name: Install uv CLI
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install
-          poetry install --with dev
+      - name: Sync dependencies with uv
+        run: uv sync --locked --all-extras --dev
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -75,12 +76,12 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          poetry run ruff check .
-          poetry run ruff format --check .
+          uv run ruff check .
+          uv run ruff format --check .
 
       - name: Run tests with pytest
         env:
           DATABASE_URL: postgresql://postgres:postgresql@localhost:5432/boilerplate-test
           REDIS_URL: redis://localhost:6379/0
         run: |
-          poetry run pytest -vv -s --cache-clear --disable-warnings ./
+          uv run pytest -vv -s --cache-clear --disable-warnings ./
