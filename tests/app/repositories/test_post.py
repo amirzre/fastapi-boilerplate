@@ -34,7 +34,7 @@ class TestPostRepository:
         user = await user_repo.create(data)
         return user
 
-    @pytest_asyncio.fixture
+    @pytest.fixture
     def post_repo(self, db_session: AsyncSession) -> PostRepository:
         """Fixture providing initialized PostRepository instance."""
         return PostRepository(model=Post, db_session=db_session)

@@ -1,6 +1,7 @@
 import asyncio
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 
+import pytest
 import pytest_asyncio
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -22,8 +23,8 @@ async_session_local = async_sessionmaker(
 )
 
 
-@pytest_asyncio.fixture(scope="session")
-def event_loop():
+@pytest.fixture(scope="session")
+def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
     """
     Create an event loop for the entire test session.
     """
