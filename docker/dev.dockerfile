@@ -1,35 +1,45 @@
-# Use the official Python image as a base
-FROM python:3.11-slim AS base
+# Use a slim Python image for a smaller footprint
+FROM python:3.13-slim
 
-# Set environment variables for Python
+# Set environment variables for Python behavior and app home
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.7.2
+    APP_HOME=/app \
+    PATH="/root/.local/bin:$PATH"
 
-# Set the working directory
-WORKDIR /app
+WORKDIR $APP_HOME
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
     build-essential \
+    libpq-dev \
+    python3-dev \
+    clang \
+    curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry self add poetry-plugin-export
+# Download the latest installer
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
-# Copy only the dependency files to leverage caching
-COPY pyproject.toml poetry.lock ./
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
 
-# Install dependencies in the virtual environment managed by Poetry
-RUN poetry install --no-root --no-interaction --no-ansi
 
-# Copy the entire application code
+# Copy pyproject.toml and other dependency files
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies with uv
+RUN uv sync --locked
+
+# Copy the rest of the application code
 COPY . .
 
-# Expose the application port
+# Make entrypoint script executable
+RUN chmod +x /app/scripts/entrypoint.sh
+
+# Expose the port the app will run on
 EXPOSE 8000
 
-# Command to run the application with hot-reloading
-CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Run entrypoint script
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
