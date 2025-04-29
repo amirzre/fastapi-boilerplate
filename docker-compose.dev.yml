@@ -1,60 +1,73 @@
 services:
-  db:
-    image: postgres:16.4
+  postgres:
+    image: postgres:16-alpine
     container_name: postgres
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgresql
-      POSTGRES_DB: poilerplate
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data/
-
-  db-test:
-    image: postgres:16.4-alpine
-    container_name: postgres-test
-    restart: always
+      - postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgresql
-      POSTGRES_DB: poilerplate-test
-    ports:
-      - "5431:5432"
-    volumes:
-      - postgres-test-data:/var/lib/postgresql/data/
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgresql
+      - POSTGRES_DB=boilerplate
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   pgadmin:
-    container_name: pgadmin4
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@email.com
-      PGADMIN_DEFAULT_PASSWORD: "pg@pass"
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@email.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://localhost:80/misc/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   redis:
-    image: redis:7.4
+    image: redis:7-alpine
     container_name: redis
     restart: always
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
-  rabbitmq:
-    image: rabbitmq:4.0.2
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=rabbit
-      - RABBITMQ_DEFAULT_PASS=password
+
+networks:
+  backend:
+    driver: bridge
 
 volumes:
   postgres-data:
-  postgres-test-data:
+  pgadmin-data:
   redis-data:
