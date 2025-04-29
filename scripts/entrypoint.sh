@@ -2,7 +2,7 @@
 set -e
 
 echo "Running database migrations..."
-uv python3 init.py
+uv run python init.py
 
 echo "Starting application..."
-exec uv python3 main.py
+exec uv run python main.py
