@@ -8,4 +8,6 @@ if __name__ == "__main__":
         app="core.server:app",
         reload=True if config.ENVIRONMENT != EnvironmentType.PRODUCTION else False,
         workers=config.WORKERS,
+        host="0.0.0.0",
+        port=8000,
     )
