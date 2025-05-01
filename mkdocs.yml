@@ -43,3 +43,4 @@ markdown_extensions:
 
 nav:
   - Getting Started: index.md
+  - Authentication: authentication.md
