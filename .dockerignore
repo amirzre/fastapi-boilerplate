@@ -9,6 +9,8 @@
 .env
 .env.*
 !.env.example
+.env.example
+.env-example
 
 # Python cache files
 __pycache__/
@@ -34,6 +36,7 @@ Dockerfile
 
 # Virtual environments
 venv/
+.venv/
 env/
 ENV/
 
