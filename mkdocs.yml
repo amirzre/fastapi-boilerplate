@@ -8,6 +8,8 @@ theme:
   features:
     - content.code.copy
     - content.code.select
+    - navigation.top
+    - toc.follow
   palette:
     - scheme: default
       toggle:
@@ -37,7 +39,6 @@ theme:
       example: octicons/beaker-16
       quote: octicons/quote-16
 
-
 markdown_extensions:
   - attr_list
   - pymdownx.emoji:
@@ -63,3 +64,4 @@ nav:
   - Getting Started: index.md
   - Authentication: authentication.md
   - Authorization: authorization.md
+  - Internationalization: internationalization.md
