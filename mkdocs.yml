@@ -65,3 +65,4 @@ nav:
   - Authentication: authentication.md
   - Authorization: authorization.md
   - Internationalization: internationalization.md
+  - Exceptions: exceptions.md

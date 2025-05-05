@@ -255,7 +255,7 @@ When a developer pulls the project from a repository, they need to regenerate th
 
 3. **Extract New Messages**:
     ```bash
-    uv runpybabel extract -F babel.cfg -o translations/messages.pot .
+    uv run pybabel extract -F babel.cfg -o translations/messages.pot .
     ```
 
 4. **Compile Translation Files**:
