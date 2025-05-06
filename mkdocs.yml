@@ -68,3 +68,4 @@ nav:
   - Exceptions: exceptions.md
   - Responses: responses.md
   - Database: database.md
+  - Cache: cache.md
