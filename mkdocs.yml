@@ -66,3 +66,6 @@ nav:
   - Authorization: authorization.md
   - Internationalization: internationalization.md
   - Exceptions: exceptions.md
+  - Responses: responses.md
+  - Database: database.md
+  - Cache: cache.md
