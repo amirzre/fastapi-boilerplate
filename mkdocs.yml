@@ -67,3 +67,4 @@ nav:
   - Internationalization: internationalization.md
   - Exceptions: exceptions.md
   - Responses: responses.md
+  - Database: database.md
