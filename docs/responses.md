@@ -142,23 +142,23 @@ In this example:
 
 ## Benefits of This Approach
 
-### 🔄 Consistency
+### Consistency
 
 All API endpoints return data in the same format, making integration simpler for frontend developers and API consumers.
 
-### 🌐 Internationalization
+### Internationalization
 
 Response messages are run through the translation system, allowing for localized error and success messages.
 
-### 🛡️ Type Safety
+### Type Safety
 
 Thanks to Python's typing system and Pydantic, we get full type checking for our response data.
 
-### 📦 Separation of Concerns
+### Separation of Concerns
 
 The response header (metadata) is clearly separated from the actual content, making it easy to process status information independently from the data.
 
-### 🔧 Extensibility
+### Extensibility
 
 The system can be easily extended to include additional metadata in the header or to handle different response scenarios.
 
