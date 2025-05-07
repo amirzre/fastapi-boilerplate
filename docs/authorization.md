@@ -11,7 +11,7 @@ This document explains in detail how both types of access control work in our sy
 
 Identity and role-based access control focuses on authenticating users and restricting access to certain resources based on their role. This is implemented through a middleware-based approach with custom permission classes.
 
-### 🔄 Authorization Flow
+### Authorization Flow
 
 When a user makes a request to our API, it goes through the following flow:
 
@@ -31,7 +31,7 @@ flowchart TD
 
 Let's break down each step in detail:
 
-### 1️⃣ Authentication Middleware
+### Authentication Middleware
 
 The request first passes through the `AuthenticationMiddleware` which attempts to authenticate the user by extracting and validating a JWT token from cookies.
 
@@ -67,7 +67,7 @@ else:
 ??? tip
     💡 The user information attached to the request is accessible throughout the request's lifecycle and can be used in route handlers and middleware. 
 
-### 2️⃣ Permission Classes
+### Permission Classes
 
 After the authentication middleware, the request reaches a route handler. Route handlers can be protected with permission dependencies to restrict access based on the authenticated user.
 
@@ -118,7 +118,7 @@ class IsAdmin(IsAuthenticated):
 
 This permission extends `IsAuthenticated` and adds an additional check for the ADMIN role.
 
-### 3️⃣ Permission Dependency
+### Permission Dependency
 
 The `PermissionDependency` class is used to apply one or more permission checks to a route:
 
@@ -138,7 +138,7 @@ class PermissionDependency(SecurityBase):
 
 When a request is made to a protected route, `PermissionDependency` evaluates each permission class in order. If any permission check fails, it raises the corresponding exception.
 
-### 4️⃣ Applying Permissions to Routes
+### Applying Permissions to Routes
 
 Permissions are applied to routes using FastAPI's dependency injection system. Here's an example:
 
@@ -237,7 +237,7 @@ class IsProductOwner(IsAuthenticated):
         return await product_service.is_owner(product_id, user_id)
 ```
 
-## ⚠️ Important Considerations
+## Important Considerations
 
 1. **Order of Permissions**: Permissions are checked in the order they're provided to `PermissionDependency`. Put the most general checks first for better error messages.
 
@@ -264,11 +264,11 @@ This system provides a flexible and extensible way to control access to our API 
 
 ---
 
-# Type 2: Row-Level Permissions
+## Type 2: Row-Level Permissions
 
 While the Type 1 access control provides a way to restrict access to entire routes based on user roles, Type 2 access control (row-level permissions) allows for much more fine-grained access control at the individual data record level.
 
-## 🔑 Key Concepts
+### Key Concepts
 
 Row-level permissions are built around several key concepts:
 
@@ -278,7 +278,7 @@ Row-level permissions are built around several key concepts:
 
 Let's explore each of these concepts and how they work together to provide granular access control.
 
-## 🧩 Principal Types
+### Principal Types
 
 Principals represent different identities that might need access to resources. Our system defines several types of principals:
 
@@ -300,7 +300,7 @@ We support these principal types:
 | `PostPrincipal` | Custom principal for posts | `PostPrincipal("post123")` |
 | `ActionPrincipal` | Custom principal for actions | `ActionPrincipal("create")` |
 
-## 🛡️ Access Control Lists (ACLs)
+### Access Control Lists (ACLs)
 
 ACLs define what principals can do with specific resources. Each ACL consists of entries with three components:
 
@@ -329,7 +329,7 @@ This ACL means:
 - A user can read, update, and delete their own profile
 - Admins can do anything with any user profile
 
-## 🔄 Row-Level Authorization Flow
+### Row-Level Authorization Flow
 
 When a user makes a request to access a specific resource, the following flow is executed:
 
@@ -346,7 +346,7 @@ flowchart TD
 
 Let's break down each step in detail:
 
-### 1️⃣ Acquiring User Principals
+### Acquiring User Principals
 
 When a request is processed, the system first needs to determine what principals are associated with the user:
 
@@ -378,7 +378,7 @@ This function:
 
 The resulting list of principals will be used to evaluate permissions.
 
-### 2️⃣ Registering Resource ACLs
+### Registering Resource ACLs
 
 When a resource is fetched, its ACL is registered in the `ACLRegistry`:
 
@@ -404,7 +404,7 @@ The ACL is either:
     
     The reason for this is because of the output type of our method. In general, the `_acl` method in the access control expects an object to be passed to it to perform validation on the desired object based on the `__acl__` defined in the model, but in this case our method finally returns UserResponse which is actually a json of the user information. We need to add the access level to this json so that the _acl method can finally control the access levels.
 
-### 3️⃣ Permission Checking
+### Permission Checking
 
 Once we have the user's principals and the resource's ACL, we can check if access should be granted:
 
@@ -423,7 +423,7 @@ async def get_user(
 
 The `assert_access` function is a dependency that checks if the current user has the required permissions for the specified resource.
 
-### 4️⃣ Permission Evaluation Logic
+### Permission Evaluation Logic
 
 The permission check happens in the `has_permission` method of the `AccessControl` class:
 
@@ -462,12 +462,12 @@ This method:
 1. Retrieves the ACL for the resource
 2. Iterates through ACL entries
 3. For each entry, checks if:
-   - The action is `Allow`
-   - The required permission is in the entry's permission list
-   - The principal matches one of the user's principals or is `Everyone`
+    - The action is `Allow`
+    - The required permission is in the entry's permission list
+    - The principal matches one of the user's principals or is `Everyone`
 4. If a match is found, access is granted
 
-## 📝 Example Scenarios
+## Example Scenarios
 
 Let's walk through some common scenarios to see how row-level permissions work:
 
@@ -534,7 +534,7 @@ sequenceDiagram
     API-->>Admin: 200 OK with user data
 ```
 
-## 🔧 Creating Custom ACLs
+## Creating Custom ACLs
 
 To implement row-level permissions for your models, you need to:
 
@@ -596,21 +596,21 @@ async def get_post(
     return APIResponse(post)
 ```
 
-## ✅ Advantages of Row-Level Permissions
+## Advantages of Row-Level Permissions
 
 1. **Fine-grained control**: Control access to individual records rather than entire endpoints
 2. **Flexible permission models**: Define complex permission schemes based on multiple factors
 3. **Declarative syntax**: Express permissions in a clear, declarative way
 4. **Centralized definition**: Keep all permission logic for a resource with the resource itself
 
-## ⚠️ Important Considerations
+## Important Considerations
 
 1. **Performance**: ACL lookups add additional overhead, consider caching strategies for large systems
 2. **Complexity**: Row-level permissions add complexity to your codebase, use them only when necessary
 3. **Consistency**: Ensure all routes that access a resource properly check permissions
 4. **Inheritance**: Consider how permissions should be inherited in hierarchical data models
 
-## 🔄 Combining Both Access Control Types
+## Combining Both Access Control Types
 
 Our system allows for combining both Types of access control:
 
@@ -618,6 +618,7 @@ Our system allows for combining both Types of access control:
 2. **Type 2 (Row-level) second**: Use `assert_access(resource=user)` to check specific resource access
 
 This provides a layered approach to security:
+
 - Type 1 prevents unauthorized access to entire routes
 - Type 2 ensures users can only access specific records they have permission for
 

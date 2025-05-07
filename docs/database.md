@@ -1,6 +1,6 @@
 # Database Module
 
-## 🔄 Overview
+## Overview
 
 The database module implements a robust system for database operations using SQLAlchemy's async capabilities. It provides:
 
@@ -12,7 +12,7 @@ The database module implements a robust system for database operations using SQL
 
 This documentation explores how these components work together to provide a clean, efficient database interface.
 
-## 🔌 Database Connection Architecture
+## Database Connection Architecture
 
 ### Read/Write Splitting Pattern
 
@@ -40,7 +40,7 @@ Database connections are managed via connection pools with the following configu
 
 These settings help optimize resource usage and ensure connection stability in production environments.
 
-## 📦 Session Management
+## Session Management
 
 ### Context Variables for Session Isolation
 
@@ -73,7 +73,7 @@ The `RoutingSession` class makes intelligent decisions about which database engi
 
 This happens automatically without requiring developers to specify which engine to use for each query.
 
-## 🔄 Transaction Management
+## Transaction Management
 
 ### The Transactional Decorator
 
@@ -94,7 +94,7 @@ The session is automatically closed after request processing through:
 
 This prevents resource leaks and ensures database connections are properly returned to the pool.
 
-## 🔧 Request-Level Session Handling
+## Request-Level Session Handling
 
 ### Middleware Integration
 
@@ -123,7 +123,7 @@ This pattern:
 - Handles proper session closure automatically
 - Makes testing easier by allowing session mocking
 
-## 📊 Model Building Blocks
+## Model Building Blocks
 
 ### Base Model
 
@@ -157,7 +157,7 @@ The `TimestampMixin` adds automatic timestamp tracking:
 
 This provides built-in auditing capabilities for all models that use this mixin.
 
-## 🔄 Lifecycle of a Database Operation
+## Lifecycle of a Database Operation
 
 To understand how all these components work together, let's follow the lifecycle of a typical database operation:
 
@@ -237,7 +237,7 @@ sequenceDiagram
 
 This lifecycle ensures proper isolation, resource management, and transaction handling.
 
-## 🚀 Best Practices
+## Best Practices
 
 ### When to Use Transactions
 
@@ -263,7 +263,7 @@ This lifecycle ensures proper isolation, resource management, and transaction ha
 - For complex queries, be aware of whether they'll be routed as read or write operations
 - Consider explicitly starting transactions for critical write operations
 
-## 🔍 Advanced Concepts
+## Advanced Concepts
 
 ### Soft Deletion Pattern
 
