@@ -1,4 +1,4 @@
-site_name: My site
+site_name: FastAPI Boilerplate
 site_url: https://localhost:8000
 theme:
   name: material
@@ -70,3 +70,4 @@ nav:
   - Database: database.md
   - Cache: cache.md
   - Migrations: migrations.md
+  - Installation: installation.md
