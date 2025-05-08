@@ -1,7 +1,8 @@
-site_name: My site
-site_url: https://localhost:8000
+site_name: FastAPI Boilerplate
 theme:
   name: material
+  logo: assets/img/logo.svg
+  favicon: assets/img/favicon.png
   font:
     text: Roboto
     code: Roboto Mono
@@ -38,6 +39,9 @@ theme:
       bug: octicons/bug-16
       example: octicons/beaker-16
       quote: octicons/quote-16
+  plugins:
+    - search:
+        lang: en
 
 markdown_extensions:
   - attr_list
@@ -59,14 +63,17 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - md_in_html
+  - pymdownx.blocks.caption
 
 nav:
   - Getting Started: index.md
+  - Installation: installation.md
+  - Database: database.md
+  - Migrations: migrations.md
   - Authentication: authentication.md
   - Authorization: authorization.md
-  - Internationalization: internationalization.md
-  - Exceptions: exceptions.md
   - Responses: responses.md
-  - Database: database.md
-  - Cache: cache.md
-  - Migrations: migrations.md
+  - Exception Handling: exceptions.md
+  - Caching: cache.md
+  - Internationalization: internationalization.md
