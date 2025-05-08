@@ -1,7 +1,8 @@
 site_name: FastAPI Boilerplate
-site_url: https://localhost:8000
 theme:
   name: material
+  logo: assets/img/logo.svg
+  favicon: assets/img/favicon.png
   font:
     text: Roboto
     code: Roboto Mono
@@ -62,6 +63,8 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - md_in_html
+  - pymdownx.blocks.caption
 
 nav:
   - Getting Started: index.md

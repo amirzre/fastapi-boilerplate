@@ -1,4 +1,5 @@
-# FastAPI Boilerplate
+![Image title](assets/img/banner.svg)
+
 
 Welcome to **FastAPI Boilerplate**, a production-ready starter kit that helps you spin up a modern, fully-asynchronous REST API in minutes. Built on FastAPI and Pydantic V2, it combines the best of Python’s type-safe world with battle-tested data persistence (SQLAlchemy V2 + PostgreSQL) and blazing-fast caching (Redis). Everything is containerized via Docker Compose so you can go from zero to API in one command.
 
