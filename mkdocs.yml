@@ -38,6 +38,9 @@ theme:
       bug: octicons/bug-16
       example: octicons/beaker-16
       quote: octicons/quote-16
+  plugins:
+    - search:
+        lang: en
 
 markdown_extensions:
   - attr_list
@@ -62,12 +65,12 @@ markdown_extensions:
 
 nav:
   - Getting Started: index.md
+  - Installation: installation.md
+  - Database: database.md
+  - Migrations: migrations.md
   - Authentication: authentication.md
   - Authorization: authorization.md
-  - Internationalization: internationalization.md
-  - Exceptions: exceptions.md
   - Responses: responses.md
-  - Database: database.md
-  - Cache: cache.md
-  - Migrations: migrations.md
-  - Installation: installation.md
+  - Exception Handling: exceptions.md
+  - Caching: cache.md
+  - Internationalization: internationalization.md
