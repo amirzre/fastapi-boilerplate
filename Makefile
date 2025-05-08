@@ -57,6 +57,16 @@ test: ## Run the test suite
 	uv run pytest -vv -s --cache-clear ./
 
 
+.PHONY: docs
+docs: ## Serve documention
+	uv run mkdocs serve
+
+
+.PHONY: pre-commit
+pre-commit: ## Setup git hook scripts
+	uv run pre-commit install
+
+
 .PHONY: help
 help: ## Show each command usage
 	@echo "Usage:"
