@@ -3,8 +3,10 @@ install: ## Install dependencies
 	uv sync
 
 
-.PHONY: run
-run: start
+.PHONY: upgrade-deps
+upgrade-deps:  ## Upgrade all installed packages
+	uv sync --upgrade
+
 
 .PHONY: start
 start: ## Starts the server
@@ -50,6 +52,16 @@ lint: ## Run code linter
 .PHONY: check-lockfile
 check-lockfile: ## Compares lock file with pyproject.toml
 	uv lock --check
+
+
+.PHONY: docker-up
+docker-up: ## Up production docker compose services
+	docker compose up -d
+
+
+.PHONY: docker-dev-up
+docker-dev-up: ## Up development docker compose services
+	docker compose -f docker-compose.dev.yml up -d
 
 
 .PHONY: test
