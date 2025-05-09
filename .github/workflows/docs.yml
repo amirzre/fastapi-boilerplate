@@ -38,17 +38,27 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: true
-      - run: |
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      - name: Replace placeholder with URL
+        run: |
           REPO="${GITHUB_REPOSITORY#*/}"
           URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO}/"
           sed -i "s|{{GITHUB_PAGES_URL}}|$URL|g" README.md
-      - run: |
+
+      - name: Commit & push changes
+        run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git diff --quiet --cached || git commit -m "readme: update README with gitHub pages URL."
-          git push
+          if ! git diff --quiet --cached; then
+            git commit -m "readme: update README with GitHub Pages URL."
+            git push
+          else
+            echo "No changes to commit"
+          fi
