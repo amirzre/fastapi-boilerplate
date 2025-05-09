@@ -11,6 +11,7 @@ theme:
     - content.code.select
     - navigation.top
     - toc.follow
+    - navigation.footer
   palette:
     - scheme: default
       toggle:
