@@ -62,4 +62,4 @@ This setup is perfect for developers looking to start their project with a solid
 
 ## Documentation
 
-For complete project documentation, please refer to our [documentation]({{GITHUB_PAGES_URL}}). The documentation includes detailed guides, API references, and examples to help you get started with the FastAPI Boilerplate.
+For complete project documentation, please refer to our [documentation](https://amirzre.github.io/fastapi-boilerplate/). The documentation includes detailed guides, API references, and examples to help you get started with the FastAPI Boilerplate.
