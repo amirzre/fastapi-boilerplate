@@ -30,7 +30,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgresql
-          POSTGRES_DB: boilerplate-test
+          POSTGRES_DB: boilerplate-db
 
       redis:
         image: redis:latest
