@@ -1,4 +1,4 @@
-name: Update README with Documentation Link
+name: Update README
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.event.workflow_run.head_branch || github.ref_name }}
 
       - name: Replace placeholder with GitHub Pages URL
         run: |
