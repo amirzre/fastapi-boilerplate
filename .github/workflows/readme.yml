@@ -1,4 +1,4 @@
-name: Update README with GitHub Pages URL
+name: Update README with Documentation Link
 
 on:
   push:
@@ -9,25 +9,40 @@ on:
     branches:
       - main
       - development
-  workflow_dispatch:
+
+  workflow_run:
+    workflows: ["Deploy Docs"]
+    types:
+      - completed
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Replace placeholder with GitHub Pages URL
+      - name: Update README with correct documentation URL
         run: |
+          # Get repository details
+          REPO_OWNER="${GITHUB_REPOSITORY_OWNER}"
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          GITHUB_PAGES_URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO_NAME}/"
-          sed -i "s|{{GITHUB_PAGES_URL}}|$GITHUB_PAGES_URL|g" README.md
+
+          # Define the documentation URL
+          DOCS_URL="https://${REPO_OWNER}.github.io/${REPO_NAME}"
+
+          # Update the README - this assumes you have a placeholder or can identify where to update
+          # Using sed to replace a placeholder with the actual URL
+          sed -i 's|<!-- DOCS-URL -->.*<!-- END-DOCS-URL -->|<!-- DOCS-URL -->[Documentation]('"${DOCS_URL}"')<!-- END-DOCS-URL -->|g' README.md
+
+          # If the placeholder doesn't exist, you might need a different approach
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git diff --cached --quiet || git commit -m "readme: update README with github pages URL."
+          git commit -m "readme: update README with github pages URL." || echo "No changes to commit."
           git push
