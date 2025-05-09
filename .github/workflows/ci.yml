@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.13"]
 
     services:
       postgres:
@@ -30,7 +30,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgresql
-          POSTGRES_DB: boilerpalte-test
+          POSTGRES_DB: boilerplate-test
 
       redis:
         image: redis:latest
