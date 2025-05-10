@@ -1,4 +1,4 @@
-from typing import Any, Generator
+from typing import Any, AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
@@ -25,7 +25,7 @@ def app() -> Generator[FastAPI, Any, None]:
 
 
 @pytest_asyncio.fixture(scope="function")
-async def client(app: FastAPI, db_session) -> AsyncClient:
+async def client(app: FastAPI, db_session) -> AsyncGenerator[AsyncClient, None]:
     """
     Provides an HTTP client for making requests to the FastAPI app.
     Overrides the session dependency to use the test database.

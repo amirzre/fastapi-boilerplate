@@ -10,8 +10,21 @@ from core.redis import redis_client as redis
 
 
 class RedisBackend(BaseBackend):
+    """
+    Redis-backed cache storage for retrieving, storing, and deleting cache entries.
+    """
+
     async def get(self, key: str, model: Optional[type[BaseModel]] = None) -> Any:
-        """Retrieve data from Redis and optionally parse it into a Pydantic model."""
+        """
+        Retrieves data from Redis and optionally parses it into a Pydantic model.
+
+        Args:
+            key (str): The cache key to look up.
+            model (Optional[type[BaseModel]]): The Pydantic model to parse the cached data into.
+
+        Returns:
+            Any: The cached data, parsed into the model if provided, otherwise raw data.
+        """
         result = await redis.get(key)
         if not result:
             return
@@ -23,18 +36,38 @@ class RedisBackend(BaseBackend):
             return pickle.loads(result)
 
     async def set(self, response: Any, key: str, ttl: int = 60) -> None:
-        """Store data in Redis, serializing based on response type and setting expiration."""
+        """
+        Stores data in Redis, serializing the response before storing it.
+
+        Args:
+            response (Any): The response data to store in the cache.
+            key (str): The cache key under which the data will be stored.
+            ttl (int): The time-to-live (TTL) for the cache entry in seconds. Default is 60.
+        """
         serialized_data = self._serialize_response(response=response)
         await redis.set(name=key, value=serialized_data, ex=ttl)
 
     async def delete_startswith(self, value: str) -> None:
-        """Delete all keys in Redis that start with a given prefix."""
+        """
+        Deletes all keys in Redis that start with the given prefix.
+
+        Args:
+            value (str): The prefix used to match and delete cache entries.
+        """
         async for key in redis.scan_iter(f"{value}::*"):
             await redis.delete(key)
 
     @staticmethod
     def _serialize_response(response: BaseModel | dict | Any) -> bytes:
-        """Serialize a response based on its type for Redis storage."""
+        """
+        Serializes the response for Redis storage, handling various response types.
+
+        Args:
+            response (BaseModel | dict | Any): The response data to serialize.
+
+        Returns:
+            bytes: The serialized response data.
+        """
         if isinstance(response, BaseModel):
             data = response.model_dump()
             data = RedisBackend._convert_uuids(data)
@@ -45,7 +78,15 @@ class RedisBackend(BaseBackend):
 
     @staticmethod
     def _convert_uuids(data: Any) -> Any:
-        """Recursively convert UUIDs to strings in a dictionary or list."""
+        """
+        Recursively converts UUIDs to strings in a dictionary or list.
+
+        Args:
+            data (Any): The data structure (dictionary or list) to convert UUIDs in.
+
+        Returns:
+            Any: The data structure with UUIDs converted to strings.
+        """
         if isinstance(data, UUID):
             return str(data)
         elif isinstance(data, dict):

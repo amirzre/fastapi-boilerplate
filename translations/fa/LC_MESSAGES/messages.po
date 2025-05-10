@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-01-09 01:58-0500\n"
-"PO-Revision-Date: 2025-01-09 02:01-0500\n"
+"POT-Creation-Date: 2025-05-04 20:58+0330\n"
+"PO-Revision-Date: 2025-05-04 21:01+0330\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa\n"
 "Language-Team: fa <LL@li.org>\n"
@@ -16,61 +16,69 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: app/controllers/auth.py:28 app/controllers/auth.py:30
+#: app/controllers/auth.py:48 app/controllers/auth.py:50
 msgid "Invalid credentials."
 msgstr "نام‌کاربری/کلمه عبور شما صحیح نمی‌باشد."
 
-#: app/controllers/auth.py:32 core/fastapi/dependencies/current_user.py:30
+#: app/controllers/auth.py:52 core/fastapi/dependencies/current_user.py:58
 msgid "The user is inactive."
 msgstr "کاربر غیرفعال می‌باشد."
 
-#: app/controllers/auth.py:47
+#: app/controllers/auth.py:82
 msgid "Invalid token or missing session ID."
 msgstr "توکن شما معتبر نمی‌باشد."
 
-#: app/controllers/auth.py:51 app/controllers/user.py:33
-#: app/controllers/user.py:67 app/controllers/user.py:87
+#: app/controllers/auth.py:86 app/controllers/post.py:50
+#: app/controllers/post.py:106 app/controllers/user.py:64
+#: app/controllers/user.py:127 app/controllers/user.py:163
 msgid "User not found."
 msgstr "کاربر مورد نظر یافت نشد."
 
-#: app/controllers/auth.py:65
+#: app/controllers/auth.py:110
 msgid "Refresh token not found."
 msgstr "توکن رفرش یافت نشد."
 
-#: app/controllers/user.py:47
+#: app/controllers/post.py:78 app/controllers/post.py:137
+#: app/controllers/post.py:167
+msgid "Post not found."
+msgstr "پست مورد نظر یافت نشد."
+
+#: app/controllers/user.py:94
 msgid "User already exists with this email."
 msgstr "کاربری با این ایمیل از قبل وجود دارد."
 
-#: core/fastapi/dependencies/authentication.py:23
-#: core/fastapi/dependencies/authentication.py:28
-#: core/fastapi/middlewares/authentication.py:22 core/security/jwt.py:14
+#: core/fastapi/dependencies/acl.py:23
+#: core/fastapi/dependencies/permission.py:40
+msgid "You do not have permission to perform this action."
+msgstr "شما اجازه انجام این عملیات را ندارید."
+
+#: core/fastapi/dependencies/authentication.py:65
+#: core/fastapi/dependencies/authentication.py:81
+#: core/fastapi/middlewares/authentication.py:28 core/security/jwt.py:16
 msgid "Invalid token."
 msgstr "توکن شما نامعتبر می‌باشد."
 
-#: core/fastapi/dependencies/cache.py:12
+#: core/fastapi/dependencies/cache.py:21
 msgid "Redis connection failed."
 msgstr "اشکال در اتصال به حافظه کش."
 
-#: core/fastapi/dependencies/permission.py:16
+#: core/fastapi/dependencies/permission.py:25
 msgid "You are not authorized to access this resource."
 msgstr "شما مجاز به دسترسی به این منبع نیستید."
-
-#: core/fastapi/dependencies/permission.py:22
-msgid "You do not have permission to perform this action."
-msgstr "شما اجازه انجام این عملیات را ندارید."
 
 #: core/responses/base.py:21 core/responses/base.py:41
 msgid "Operation completed successfully."
 msgstr "عملیات با موفقیت انجام شد."
 
-#: core/security/jwt.py:20
+#: core/security/jwt.py:24
 msgid "Token expired."
 msgstr "توکن شما منقضی شده است."
 
-#: core/utils/validators.py:16
+#: core/utils/validators.py:35
 msgid ""
 "Password must contain at least 8 characters, including one uppercase "
 "letter, one lowercase letter, one number, and one special character."
-msgstr "کلمه عبور باید شامل ۸ کاراکتر، حروف بزرگ، حروف کوچک، اعداد و کاراکتر‌های خاص باشد."
+msgstr "کلمه عبور باید حداقل ۸ حرف، شامل حروف بزرگ و کوچک، کاراکتر‌های خاص و اعداد باشد."
+

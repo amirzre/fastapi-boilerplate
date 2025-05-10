@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from app.controllers import AuthController
-from app.schemas.extra import Token
 from app.schemas.request import UserLoginRequest
+from app.schemas.response import TokenResponse
 from core.exceptions import BadRequestException, NotFoundException, UnauthorizedException
 
 
@@ -43,7 +43,7 @@ class TestAuthController:
                         cache=mock_cache,
                     )
 
-                    assert isinstance(response, Token)
+                    assert isinstance(response, TokenResponse)
                     assert response.access_token == "access_token"
                     assert response.refresh_token == "refresh_token"
                     mock_cache.set.assert_called_once()
@@ -76,7 +76,7 @@ class TestAuthController:
                     cache=mock_cache,
                 )
 
-                assert isinstance(response, Token)
+                assert isinstance(response, TokenResponse)
                 assert response.access_token == "new_access_token"
                 assert response.refresh_token == "new_refresh_token"
                 mock_cache.set.assert_called_once()

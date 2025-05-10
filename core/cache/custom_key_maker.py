@@ -5,14 +5,26 @@ from core.cache.base import BaseKeyMaker
 
 
 class CustomKeyMaker(BaseKeyMaker):
+    """
+    Custom key maker for generating cache keys based on function name, module, and parameters.
+    """
+
     async def make(self, function: Callable, prefix: str) -> str:
-        path = f"{prefix}::{inspect.getmodule(function).__name__}.{function.__name__}"
-        args = ""
+        """
+        Generates a unique cache key based on the function, its module, and parameters.
 
-        for arg in inspect.signature(function).parameters.values():
-            args += arg.name
+        Args:
+            function (Callable): The function whose result is being cached.
+            prefix (str): The prefix to prepend to the generated cache key.
 
-        if args:
-            return f"{path}.{args}"
+        Returns:
+            str: The generated cache key.
+        """
+        module = inspect.getmodule(function)
+        module_name = module.__name__ if module is not None else "unknown"
 
-        return path
+        path = f"{prefix}::{module_name}::{function.__name__}"
+
+        args = "".join(param.name for param in inspect.signature(function).parameters.values())
+
+        return f"{path}.{args}" if args else path

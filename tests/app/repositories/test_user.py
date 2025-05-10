@@ -5,7 +5,7 @@ import pytest
 
 from app.models import User, UserRole
 from app.repositories import UserRepository
-from app.schemas.extra import UserFilterParams
+from app.schemas.request import UserFilterParams
 
 
 @pytest.mark.asyncio
@@ -48,6 +48,7 @@ class TestUserRepository:
 
         self.mock_query.filter.assert_called_once_with(ANY)
         self.mock_one_or_none.assert_awaited_once_with(self.mock_query)
+
         assert result == mock_user
 
     async def test_get_by_email_not_found(self):
@@ -61,6 +62,7 @@ class TestUserRepository:
 
         self.mock_query.filter.assert_called_once_with(ANY)
         self.mock_one_or_none.assert_awaited_once_with(self.mock_query)
+
         assert result is None
 
     async def test_get_by_uuid_success(self):
@@ -75,6 +77,7 @@ class TestUserRepository:
 
         self.mock_query.filter.assert_called_once_with(ANY)
         self.mock_one_or_none.assert_awaited_once_with(self.mock_query)
+
         assert result == mock_user
 
     async def test_get_by_uuid_not_found(self):
@@ -88,6 +91,7 @@ class TestUserRepository:
 
         self.mock_query.filter.assert_called_once_with(ANY)
         self.mock_one_or_none.assert_awaited_once_with(self.mock_query)
+
         assert result is None
 
     async def test_get_filtered_users(self):
@@ -118,4 +122,5 @@ class TestUserRepository:
         self.mock_query.order_by.assert_called_once_with(User.created)
         self.mock_all.assert_awaited_once_with(query=self.mock_query)
         self.mock_count.assert_awaited_once_with(query=self.mock_query)
+
         assert result == (mock_users, total_count)

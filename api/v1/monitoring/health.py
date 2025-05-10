@@ -13,7 +13,9 @@ async def health_check(
     health_check_controller: HealthCheckController = Depends(get_health_check),
 ) -> APIResponseType[HealthCheckResponse]:
     """
-    Return database, cache and etc status.
+    Perform a health check of the application components.
+
+    Returns the status of essential services like the database and cache.
     """
     health_check = await health_check_controller.health_check()
     return APIResponse(health_check)

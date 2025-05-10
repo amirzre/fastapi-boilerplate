@@ -2,35 +2,70 @@ from pydantic import UUID4
 
 from app.models import User
 from app.repositories import UserRepository
-from app.schemas.extra import PaginationResponse, UserFilterParams
-from app.schemas.request import RegisterUserRequest, UpdateUserRequest
+from app.schemas.extra import PaginationResponse
+from app.schemas.request import RegisterUserRequest, UpdateUserRequest, UserFilterParams
 from app.schemas.response import UserResponse
 from core.controller import BaseController
 from core.db import Transactional
 from core.exceptions import BadRequestException, NotFoundException
 from core.i18n import translate as _
-from core.security import PasswordHandler
+from core.security import ACLRegistry, PasswordHandler
 
 
 class UserController(BaseController[User]):
     """
-    User controller provides all the logic operations for the User model.
+    Handles business logic for user-related operations.
     """
 
     def __init__(self, user_repository: UserRepository):
+        """
+        Initializes the UserController.
+
+        Args:
+            user_repository (UserRepository): Repository instance for interacting with User model.
+        """
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
 
-    async def get_filtered_user(self, *, filter_params: UserFilterParams) -> PaginationResponse[UserResponse]:
+    async def get_users(self, *, filter_params: UserFilterParams) -> PaginationResponse[UserResponse]:
+        """
+        Retrieves a list of users based on filter parameters.
+
+        Args:
+            filter_params (UserFilterParams): Filtering and pagination parameters.
+
+        Returns:
+            PaginationResponse[UserResponse]: Paginated list of users.
+        """
         users, total = await self.user_repository.get_filtered_users(filter_params=filter_params)
+
         return PaginationResponse[UserResponse](
-            limit=filter_params.limit, offset=filter_params.offset, total=total, items=users
+            limit=filter_params.limit,
+            offset=filter_params.offset,
+            total=total,
+            items=[UserResponse.model_validate(user) for user in users],
         )
 
     async def get_user(self, *, user_uuid: UUID4) -> UserResponse:
+        """
+        Retrieves a user by their UUID.
+
+        Args:
+            user_uuid (UUID4): Unique identifier of the user.
+
+        Returns:
+            UserResponse: User data.
+
+        Raises:
+            NotFoundException: If user does not exist.
+        """
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
             raise NotFoundException(message=_("User not found."))
+
+        acl = user.__acl__()
+        ACLRegistry.set_acl(resource_id=user.uuid, acl=acl)
+
         return UserResponse(
             uuid=user.uuid,
             email=user.email,
@@ -42,6 +77,18 @@ class UserController(BaseController[User]):
 
     @Transactional()
     async def register_user(self, *, register_user_request: RegisterUserRequest) -> UserResponse:
+        """
+        Registers a new user.
+
+        Args:
+            register_user_request (RegisterUserRequest): User registration data.
+
+        Returns:
+            UserResponse: Data of the newly created user.
+
+        Raises:
+            BadRequestException: If email already exists.
+        """
         user = await self.user_repository.get_by_email(email=register_user_request.email)
         if user:
             raise BadRequestException(message=_("User already exists with this email."))
@@ -62,6 +109,19 @@ class UserController(BaseController[User]):
 
     @Transactional()
     async def update_user(self, *, user_uuid: UUID4, update_user_request: UpdateUserRequest) -> UserResponse:
+        """
+        Updates an existing user's data.
+
+        Args:
+            user_uuid (UUID4): Unique identifier of the user.
+            update_user_request (UpdateUserRequest): Updated user data.
+
+        Returns:
+            UserResponse: Updated user data.
+
+        Raises:
+            NotFoundException: If user does not exist.
+        """
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
             raise NotFoundException(message=_("User not found."))
@@ -72,6 +132,10 @@ class UserController(BaseController[User]):
             update_data["password"] = PasswordHandler.hash(password=new_password)
 
         updated_user = await self.user_repository.update(model=user, attributes=update_data)
+
+        acl = updated_user.__acl__()
+        ACLRegistry.set_acl(resource_id=updated_user.uuid, acl=acl)
+
         return UserResponse(
             uuid=updated_user.uuid,
             email=updated_user.email,
@@ -81,9 +145,33 @@ class UserController(BaseController[User]):
             activated=updated_user.activated,
         )
 
-    async def delete_user(self, *, user_uuid: UUID4) -> None:
+    async def delete_user(self, *, user_uuid: UUID4) -> UserResponse:
+        """
+        Deletes a user by UUID.
+
+        Args:
+            user_uuid (UUID4): Unique identifier of the user.
+
+        Returns:
+            UserResponse: Deleted user data.
+
+        Raises:
+            NotFoundException: If user does not exist.
+        """
         user = await self.user_repository.get_by_uuid(uuid=user_uuid)
         if not user:
             raise NotFoundException(message=_("User not found."))
 
-        return await self.user_repository.delete(model=user)
+        acl = user.__acl__()
+        ACLRegistry.set_acl(resource_id=user.uuid, acl=acl)
+
+        deleted_user = await self.user_repository.delete(model=user)
+
+        return UserResponse(
+            uuid=deleted_user.uuid,
+            email=deleted_user.email,
+            first_name=deleted_user.first_name,
+            last_name=deleted_user.last_name,
+            role=deleted_user.role,
+            activated=deleted_user.activated,
+        )

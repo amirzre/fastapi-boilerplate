@@ -8,7 +8,6 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.models import Base
-
 from core.config import config as app_config
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
@@ -17,7 +16,10 @@ sys.path.append(parent_dir)
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+assert config.config_file_name is not None, "config.config_file_name is None"
 fileConfig(config.config_file_name)
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 # Interpret the config file for Python logging.
@@ -48,7 +50,7 @@ def run_migrations_offline():
     """
     config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=app_config.POSTGRES_URL.unicode_string(),
+        url=app_config.POSTGRES_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -71,7 +73,7 @@ async def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    connectable = create_async_engine(app_config.POSTGRES_URL.unicode_string(), poolclass=pool.NullPool)
+    connectable = create_async_engine(app_config.POSTGRES_URL, poolclass=pool.NullPool)
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

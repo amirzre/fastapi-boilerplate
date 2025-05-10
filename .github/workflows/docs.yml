@@ -1,0 +1,64 @@
+name: Deploy Docs & Update README
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+      - run: pip install mkdocs-material
+      - run: mkdocs gh-deploy --force
+
+  update-readme:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      - name: Replace placeholder with URL
+        run: |
+          REPO="${GITHUB_REPOSITORY#*/}"
+          URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO}/"
+          sed -i "s|{{GITHUB_PAGES_URL}}|$URL|g" README.md
+
+      - name: Commit & push changes
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if ! git diff --quiet --cached; then
+            git commit -m "readme: update README with GitHub Pages URL."
+            git push
+          else
+            echo "No changes to commit"
+          fi

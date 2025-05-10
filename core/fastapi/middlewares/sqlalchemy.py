@@ -6,6 +6,11 @@ from core.db.session import reset_session_context, session, set_session_context
 
 
 class SQLAlchemyMiddleware:
+    """
+    Middleware to manage SQLAlchemy session context per request.
+    Generates a unique session ID and resets the session context after the request completes.
+    """
+
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
@@ -18,5 +23,5 @@ class SQLAlchemyMiddleware:
         except Exception as exception:
             raise exception
         finally:
-            await session.remove()
+            await session.close()
             reset_session_context(context=context)

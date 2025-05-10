@@ -1,46 +1,27 @@
-# Stage 1: Build the dependencies layer
-FROM python:3.11-slim AS builder
+FROM python:3.13-slim
 
-# Set environment variables for Python
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.7.2
-
-# Set the working directory
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    build-essential \
+# Install system dependencies for psycopg2 (and clang if needed)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential python3-dev libpq-dev clang \
+    curl python3-uvicorn \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry self add poetry-plugin-export
+# Install uv directly into /usr/local/bin
+RUN curl -LsSf https://astral.sh/uv/install.sh \
+    | env UV_INSTALL_DIR="/usr/local/bin" sh
 
-# Copy only the dependency files to leverage caching
-COPY pyproject.toml poetry.lock ./
+# Create a non-root user
+RUN useradd --create-home --shell /bin/bash appuser
+WORKDIR /home/appuser
+USER appuser
 
-# Install the production dependencies into a virtual environment
-RUN poetry install --no-dev --no-root --no-interaction --no-ansi
+# Copy project files
+COPY --chown=appuser:appuser . .
 
-# Stage 2: Create the final runtime image
-FROM python:3.11-slim AS final
+# Install Python dependencies with uv
+RUN uv sync --no-dev
 
-# Set environment variables for Python
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the virtual environment from the builder stage
-COPY --from=builder /root/.local /root/.local
-ENV PATH="/root/.local/bin:$PATH"
-
-# Copy the entire application code
-COPY . .
-
-# Expose the application port
+# Expose and launch
 EXPOSE 8000
+ENTRYPOINT ["uv", "run", "sh", "scripts/entrypoint.sh"]
