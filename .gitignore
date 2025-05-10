@@ -130,3 +130,12 @@ dmypy.json
 .pyre/
 
 .DS_Store
+
+# Pycharm idea
+.idea
+
+# .vscode
+.vscode/
+
+# Ruff cache
+.ruff_cache/

@@ -1,0 +1,87 @@
+.PHONY: install
+install: ## Install dependencies
+	uv sync
+
+
+.PHONY: upgrade-deps
+upgrade-deps:  ## Upgrade all installed packages
+	uv sync --upgrade
+
+
+.PHONY: start
+start: ## Starts the server
+	uv run python3 main.py
+
+
+.PHONY: migrate
+migrate: ## Run the migrations
+	uv run alembic upgrade head
+
+
+.PHONY: rollback
+rollback: ## Rollback migrations one level
+	uv run alembic downgrade -1
+
+
+.PHONY: reset-database
+reset-database: ## Rollback all migrations
+	uv run alembic downgrade base
+
+
+.PHONY: generate-migration
+generate-migration: ## Generate a new migration
+	read -p "Enter migration message: " msg; \
+	uv run alembic revision --autogenerate -m "$$msg"
+
+
+.PHONY: celery-worker
+celery-worker: ## Start celery worker
+	uv run celery -A worker worker -l info
+
+
+.PHONY: format
+format: ## Run code formatter
+	uv run ruff format
+
+
+.PHONY: lint
+lint: ## Run code linter
+	uv run ruff check --fix
+
+
+.PHONY: check-lockfile
+check-lockfile: ## Compares lock file with pyproject.toml
+	uv lock --check
+
+
+.PHONY: docker-up
+docker-up: ## Up production docker compose services
+	docker compose up -d
+
+
+.PHONY: docker-dev-up
+docker-dev-up: ## Up development docker compose services
+	docker compose -f docker-compose.dev.yml up -d
+
+
+.PHONY: test
+test: ## Run the test suite
+	uv run pytest -vv -s --cache-clear ./
+
+
+.PHONY: docs
+docs: ## Serve documention
+	uv run mkdocs serve
+
+
+.PHONY: pre-commit
+pre-commit: ## Setup git hook scripts
+	uv run pre-commit install
+
+
+.PHONY: help
+help: ## Show each command usage
+	@echo "Usage:"
+	@grep -E '^[[:alnum:]_-]+:.*##' $(MAKEFILE_LIST) | \
+		sed -E 's/^([[:alnum:]_-]+):.*##[[:space:]]*(.*)$$/\1|\2/' | \
+		awk -F"|" '{ printf "  %-20s %s\n", $$1, $$2 }'

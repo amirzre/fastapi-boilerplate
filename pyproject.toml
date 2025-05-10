@@ -1,0 +1,35 @@
+[project]
+name = "fastapi-boilerplate"
+version = "1.0.0"
+description = "Template to speed your FastAPI development up."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.15.2",
+    "asyncpg>=0.30.0",
+    "babel>=2.17.0",
+    "bcrypt>=4.3.0",
+    "fastapi[standard]>=0.115.12",
+    "orjson>=3.10.16",
+    "psycopg2>=2.9.10",
+    "pydantic-settings>=2.9.1",
+    "pyjwt>=2.10.1",
+    "redis>=5.2.1",
+    "sqlalchemy>=2.0.40",
+]
+
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.3",
+    "faker>=37.1.0",
+    "mkdocs-material>=9.6.12",
+    "mypy>=1.15.0",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "ruff>=0.11.7",
+]
+
+[tool.uv]
+default-groups = []
