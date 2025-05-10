@@ -1,0 +1,1927 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../authentication/">
+      
+      
+        <link rel="next" href="../responses/">
+      
+      
+      <link rel="icon" href="../assets/img/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.13">
+    
+    
+      
+        <title>Authorization - FastAPI Boilerplate</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M1%207.775V2.75C1%201.784%201.784%201%202.75%201h5.025c.464%200%20.91.184%201.238.513l6.25%206.25a1.75%201.75%200%200%201%200%202.474l-5.026%205.026a1.75%201.75%200%200%201-2.474%200l-6.25-6.25A1.75%201.75%200%200%201%201%207.775m1.5%200c0%20.066.026.13.073.177l6.25%206.25a.25.25%200%200%200%20.354%200l5.025-5.025a.25.25%200%200%200%200-.354l-6.25-6.25a.25.25%200%200%200-.177-.073H2.75a.25.25%200%200%200-.25.25ZM6%205a1%201%200%201%201%200%202%201%201%200%200%201%200-2%22/%3E%3C/svg%3E');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M2.5%201.75v11.5c0%20.138.112.25.25.25h3.17a.75.75%200%200%201%200%201.5H2.75A1.75%201.75%200%200%201%201%2013.25V1.75C1%20.784%201.784%200%202.75%200h8.5C12.216%200%2013%20.784%2013%201.75v7.736a.75.75%200%200%201-1.5%200V1.75a.25.25%200%200%200-.25-.25h-8.5a.25.25%200%200%200-.25.25m13.274%209.537zl-4.557%204.45a.75.75%200%200%201-1.055-.008l-1.943-1.95a.75.75%200%200%201%201.062-1.058l1.419%201.425%204.026-3.932a.75.75%200%201%201%201.048%201.074M4.75%204h4.5a.75.75%200%200%201%200%201.5h-4.5a.75.75%200%200%201%200-1.5M4%207.75A.75.75%200%200%201%204.75%207h2a.75.75%200%200%201%200%201.5h-2A.75.75%200%200%201%204%207.75%22/%3E%3C/svg%3E');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M0%208a8%208%200%201%201%2016%200A8%208%200%200%201%200%208m8-6.5a6.5%206.5%200%201%200%200%2013%206.5%206.5%200%200%200%200-13M6.5%207.75A.75.75%200%200%201%207.25%207h1a.75.75%200%200%201%20.75.75v2.75h.25a.75.75%200%200%201%200%201.5h-2a.75.75%200%200%201%200-1.5h.25v-2h-.25a.75.75%200%200%201-.75-.75M8%206a1%201%200%201%201%200-2%201%201%200%200%201%200%202%22/%3E%3C/svg%3E');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M3.499.75a.75.75%200%200%201%201.5%200v.996C5.9%202.903%206.793%203.65%207.662%204.376l.24.202c-.036-.694.055-1.422.426-2.163C9.1.873%2010.794-.045%2012.622.26%2014.408.558%2016%201.94%2016%204.25c0%201.278-.954%202.575-2.44%202.734l.146.508.065.22c.203.701.412%201.455.476%202.226.142%201.707-.4%203.03-1.487%203.898C11.714%2014.671%2010.27%2015%208.75%2015h-6a.75.75%200%200%201%200-1.5h1.376a4.5%204.5%200%200%201-.563-1.191%203.84%203.84%200%200%201-.05-2.063%204.65%204.65%200%200%201-2.025-.293.75.75%200%200%201%20.525-1.406c1.357.507%202.376-.006%202.698-.318l.009-.01a.747.747%200%200%201%201.06%200%20.75.75%200%200%201-.012%201.074c-.912.92-.992%201.835-.768%202.586.221.74.745%201.337%201.196%201.621H8.75c1.343%200%202.398-.296%203.074-.836.635-.507%201.036-1.31.928-2.602-.05-.603-.216-1.224-.422-1.93l-.064-.221c-.12-.407-.246-.84-.353-1.29a2.4%202.4%200%200%201-.507-.441%203.1%203.1%200%200%201-.633-1.248.75.75%200%200%201%201.455-.364c.046.185.144.436.31.627.146.168.353.305.712.305.738%200%201.25-.615%201.25-1.25%200-1.47-.95-2.315-2.123-2.51-1.172-.196-2.227.387-2.706%201.345-.46.92-.27%201.774.019%203.062l.042.19.01.05c.348.443.666.949.94%201.553a.75.75%200%201%201-1.365.62c-.553-1.217-1.32-1.94-2.3-2.768L6.7%205.527c-.814-.68-1.75-1.462-2.692-2.619a3.7%203.7%200%200%200-1.023.88c-.406.495-.663%201.036-.722%201.508.116.122.306.21.591.239.388.038.797-.06%201.032-.19a.75.75%200%200%201%20.728%201.31c-.515.287-1.23.439-1.906.373-.682-.067-1.473-.38-1.879-1.193L.75%205.677V5.5c0-.984.48-1.94%201.077-2.664.46-.559%201.05-1.055%201.673-1.353z%22/%3E%3C/svg%3E');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M13.78%204.22a.75.75%200%200%201%200%201.06l-7.25%207.25a.75.75%200%200%201-1.06%200L2.22%209.28a.75.75%200%200%201%20.018-1.042.75.75%200%200%201%201.042-.018L6%2010.94l6.72-6.72a.75.75%200%200%201%201.06%200%22/%3E%3C/svg%3E');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M0%208a8%208%200%201%201%2016%200A8%208%200%200%201%200%208m8-6.5a6.5%206.5%200%201%200%200%2013%206.5%206.5%200%200%200%200-13M6.92%206.085h.001a.749.749%200%201%201-1.342-.67c.169-.339.436-.701.849-.977C6.845%204.16%207.369%204%208%204a2.76%202.76%200%200%201%201.637.525c.503.377.863.965.863%201.725%200%20.448-.115.83-.329%201.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6%206%200%200%200-.26.16%201%201%200%200%200-.276.245.75.75%200%200%201-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1%201%200%200%200%20.277-.245C8.96%206.514%209%206.427%209%206.25a.61.61%200%200%200-.262-.525A1.27%201.27%200%200%200%208%205.5c-.369%200-.595.09-.74.187a1%201%200%200%200-.34.398M9%2011a1%201%200%201%201-2%200%201%201%200%200%201%202%200%22/%3E%3C/svg%3E');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M6.457%201.047c.659-1.234%202.427-1.234%203.086%200l6.082%2011.378A1.75%201.75%200%200%201%2014.082%2015H1.918a1.75%201.75%200%200%201-1.543-2.575Zm1.763.707a.25.25%200%200%200-.44%200L1.698%2013.132a.25.25%200%200%200%20.22.368h12.164a.25.25%200%200%200%20.22-.368Zm.53%203.996v2.5a.75.75%200%200%201-1.5%200v-2.5a.75.75%200%200%201%201.5%200M9%2011a1%201%200%201%201-2%200%201%201%200%200%201%202%200%22/%3E%3C/svg%3E');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M2.344%202.343za8%208%200%200%201%2011.314%2011.314A8.002%208.002%200%200%201%20.234%2010.089a8%208%200%200%201%202.11-7.746m1.06%2010.253a6.5%206.5%200%201%200%209.108-9.275%206.5%206.5%200%200%200-9.108%209.275M6.03%204.97%208%206.94l1.97-1.97a.749.749%200%200%201%201.275.326.75.75%200%200%201-.215.734L9.06%208l1.97%201.97a.749.749%200%200%201-.326%201.275.75.75%200%200%201-.734-.215L8%209.06l-1.97%201.97a.749.749%200%200%201-1.275-.326.75.75%200%200%201%20.215-.734L6.94%208%204.97%206.03a.75.75%200%200%201%20.018-1.042.75.75%200%200%201%201.042-.018%22/%3E%3C/svg%3E');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M9.504.43a1.516%201.516%200%200%201%202.437%201.713L10.415%205.5h2.123c1.57%200%202.346%201.909%201.22%203.004l-7.34%207.142a1.25%201.25%200%200%201-.871.354h-.302a1.25%201.25%200%200%201-1.157-1.723L5.633%2010.5H3.462c-1.57%200-2.346-1.909-1.22-3.004zm1.047%201.074L3.286%208.571A.25.25%200%200%200%203.462%209H6.75a.75.75%200%200%201%20.694%201.034l-1.713%204.188%206.982-6.793A.25.25%200%200%200%2012.538%207H9.25a.75.75%200%200%201-.683-1.06l2.008-4.418.003-.006-.004-.009-.006-.006-.008-.001q-.005%200-.009.004%22/%3E%3C/svg%3E');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M4.72.22a.75.75%200%200%201%201.06%200l1%20.999a3.5%203.5%200%200%201%202.441%200l.999-1a.748.748%200%200%201%201.265.332.75.75%200%200%201-.205.729l-.775.776c.616.63.995%201.493.995%202.444v.327q0%20.15-.025.292c.408.14.764.392%201.029.722l1.968-.787a.75.75%200%200%201%20.556%201.392L13%207.258V9h2.25a.75.75%200%200%201%200%201.5H13v.5q-.002.615-.141%201.186l2.17.868a.75.75%200%200%201-.557%201.392l-2.184-.873A5%205%200%200%201%208%2016a5%205%200%200%201-4.288-2.427l-2.183.873a.75.75%200%200%201-.558-1.392l2.17-.868A5%205%200%200%201%203%2011v-.5H.75a.75.75%200%200%201%200-1.5H3V7.258L.971%206.446a.75.75%200%200%201%20.558-1.392l1.967.787c.265-.33.62-.583%201.03-.722a1.7%201.7%200%200%201-.026-.292V4.5c0-.951.38-1.814.995-2.444L4.72%201.28a.75.75%200%200%201%200-1.06m.53%206.28a.75.75%200%200%200-.75.75V11a3.5%203.5%200%201%200%207%200V7.25a.75.75%200%200%200-.75-.75ZM6.173%205h3.654A.17.17%200%200%200%2010%204.827V4.5a2%202%200%201%200-4%200v.327c0%20.096.077.173.173.173%22/%3E%3C/svg%3E');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M5%205.782V2.5h-.25a.75.75%200%200%201%200-1.5h6.5a.75.75%200%200%201%200%201.5H11v3.282l3.666%205.76C15.619%2013.04%2014.543%2015%2012.767%2015H3.233c-1.776%200-2.852-1.96-1.899-3.458Zm-2.4%206.565a.75.75%200%200%200%20.633%201.153h9.534a.75.75%200%200%200%20.633-1.153L12.225%2010.5h-8.45ZM9.5%202.5h-3V6c0%20.143-.04.283-.117.403L4.73%209h6.54L9.617%206.403A.75.75%200%200%201%209.5%206Z%22/%3E%3C/svg%3E');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M1.75%202.5h10.5a.75.75%200%200%201%200%201.5H1.75a.75.75%200%200%201%200-1.5m4%205h8.5a.75.75%200%200%201%200%201.5h-8.5a.75.75%200%200%201%200-1.5m0%205h8.5a.75.75%200%200%201%200%201.5h-8.5a.75.75%200%200%201%200-1.5M2.5%207.75v6a.75.75%200%200%201-1.5%200v-6a.75.75%200%200%201%201.5%200%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#authorization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FastAPI Boilerplate" class="md-header__button md-logo" aria-label="FastAPI Boilerplate" data-md-component="logo">
+      
+  <img src="../assets/img/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FastAPI Boilerplate
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Authorization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FastAPI Boilerplate" class="md-nav__button md-logo" aria-label="FastAPI Boilerplate" data-md-component="logo">
+      
+  <img src="../assets/img/logo.svg" alt="logo">
+
+    </a>
+    FastAPI Boilerplate
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Database
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Authentication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Authorization
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Authorization
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#type-1-identity-and-role-based-access-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type 1: Identity and Role-Based Access Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type 1: Identity and Role-Based Access Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authorization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authorization Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication Middleware
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-during-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      What happens during authentication:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Classes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Permission Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basepermission" class="md-nav__link">
+    <span class="md-ellipsis">
+      BasePermission
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isauthenticated" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsAuthenticated
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsAdmin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Dependency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applying-permissions-to-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applying Permissions to Routes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-1-unauthenticated-user-accessing-protected-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 1: Unauthenticated User Accessing Protected Route
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-2-regular-user-accessing-admin-only-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 2: Regular User Accessing Admin-Only Route
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-3-admin-user-accessing-admin-only-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 3: Admin User Accessing Admin-Only Route
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-permission-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Permission Classes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-2-row-level-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type 2: Row-Level Permissions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type 2: Row-Level Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Concepts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principal-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Principal Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-control-lists-acls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access Control Lists (ACLs)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#row-level-authorization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Row-Level Authorization Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acquiring-user-principals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acquiring User Principals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registering-resource-acls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering Resource ACLs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-checking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Checking
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-evaluation-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Evaluation Logic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-scenarios_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-1-user-viewing-their-own-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 1: User Viewing Their Own Profile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-2-user-trying-to-access-another-users-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 2: User Trying to Access Another User's Profile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-3-admin-accessing-any-users-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 3: Admin Accessing Any User's Profile
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-custom-acls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating Custom ACLs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advantages-of-row-level-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advantages of Row-Level Permissions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-both-access-control-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combining Both Access Control Types
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Responses
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Exception Handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Caching
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Internationalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#type-1-identity-and-role-based-access-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type 1: Identity and Role-Based Access Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type 1: Identity and Role-Based Access Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authorization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authorization Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication Middleware
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-during-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      What happens during authentication:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Classes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Permission Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basepermission" class="md-nav__link">
+    <span class="md-ellipsis">
+      BasePermission
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isauthenticated" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsAuthenticated
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsAdmin
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Dependency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applying-permissions-to-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applying Permissions to Routes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-1-unauthenticated-user-accessing-protected-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 1: Unauthenticated User Accessing Protected Route
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-2-regular-user-accessing-admin-only-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 2: Regular User Accessing Admin-Only Route
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-3-admin-user-accessing-admin-only-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 3: Admin User Accessing Admin-Only Route
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-permission-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Permission Classes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-2-row-level-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type 2: Row-Level Permissions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type 2: Row-Level Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Concepts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principal-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Principal Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-control-lists-acls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access Control Lists (ACLs)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#row-level-authorization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Row-Level Authorization Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acquiring-user-principals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acquiring User Principals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registering-resource-acls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering Resource ACLs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-checking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Checking
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-evaluation-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permission Evaluation Logic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-scenarios_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-1-user-viewing-their-own-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 1: User Viewing Their Own Profile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-2-user-trying-to-access-another-users-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 2: User Trying to Access Another User's Profile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-3-admin-accessing-any-users-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 3: Admin Accessing Any User's Profile
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-custom-acls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating Custom ACLs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advantages-of-row-level-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advantages of Row-Level Permissions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-both-access-control-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combining Both Access Control Types
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="authorization">Authorization</h1>
+<p>Authorization is a crucial aspect of any application that handles sensitive data or provides different functionality based on user roles. In our system, we've implemented two complementary types of access control:</p>
+<ol>
+<li><strong>Identity and Role-Based Access Control</strong>: Authentication and permission checks based on who the user is and what role they have.</li>
+<li><strong>Row-Level Permissions</strong>: Fine-grained control over which data records users can access.</li>
+</ol>
+<p>This document explains in detail how both types of access control work in our system.</p>
+<h2 id="type-1-identity-and-role-based-access-control">Type 1: Identity and Role-Based Access Control</h2>
+<p>Identity and role-based access control focuses on authenticating users and restricting access to certain resources based on their role. This is implemented through a middleware-based approach with custom permission classes.</p>
+<h3 id="authorization-flow">Authorization Flow</h3>
+<p>When a user makes a request to our API, it goes through the following flow:</p>
+<pre class="mermaid"><code>flowchart TD
+    A[User Request] --&gt; B[Authentication Middleware]
+    B -- Valid Token --&gt; C[Attach User to Request]
+    B -- Invalid/No Token --&gt; D[Request Continues with No User]
+    C --&gt; E[Route Handler]
+    D --&gt; E
+    E -- Permission Dependency --&gt; F[Check Permissions]
+    F -- Permission Success --&gt; G[Execute Handler]
+    F -- Permission Denied --&gt; H[Return Error]
+    G --&gt; I[Return Response]
+    H --&gt; J[Return Error Response]</code></pre>
+<p>Let's break down each step in detail:</p>
+<h3 id="authentication-middleware">Authentication Middleware</h3>
+<p>The request first passes through the <code>AuthenticationMiddleware</code> which attempts to authenticate the user by extracting and validating a JWT token from cookies.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># First, the middleware extracts the token from cookies</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Access-Token&quot;</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># If a token exists, it tries to decode and validate it</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">if</span> <span class="n">token</span><span class="p">:</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="n">decoded_token</span> <span class="o">=</span> <span class="n">JWTHandler</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="n">user_uuid</span> <span class="o">=</span> <span class="n">decoded_token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uuid&quot;</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="n">user_role</span> <span class="o">=</span> <span class="n">decoded_token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="c1"># If valid user info is found, attach it to the request state</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="k">if</span> <span class="n">user_uuid</span> <span class="ow">and</span> <span class="n">user_role</span><span class="p">:</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>            <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">user_role</span><span class="p">}</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>            <span class="k">raise</span> <span class="n">UnauthorizedException</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Invalid token.&quot;</span><span class="p">))</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="k">raise</span> <span class="n">UnauthorizedException</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication failed: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="c1"># If no token is provided, set user to None</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="kc">None</span>
+</span></code></pre></div>
+<h4 id="what-happens-during-authentication">What happens during authentication:</h4>
+<ul>
+<li>If the token is valid, the user's UUID and role are attached to <code>request.state.user</code></li>
+<li>If the token is invalid or malformed, an <code>UnauthorizedException</code> is raised</li>
+<li>If no token is provided, <code>request.state.user</code> is set to <code>None</code> (unauthenticated)</li>
+</ul>
+<details class="tip">
+<summary>Tip</summary>
+<p>💡 The user information attached to the request is accessible throughout the request's lifecycle and can be used in route handlers and middleware. </p>
+</details>
+<h3 id="permission-classes">Permission Classes</h3>
+<p>After the authentication middleware, the request reaches a route handler. Route handlers can be protected with permission dependencies to restrict access based on the authenticated user.</p>
+<p>Our system defines an extensible hierarchy of permission classes:</p>
+<ol>
+<li><code>BasePermission</code>: Abstract base class for all permissions</li>
+<li><code>IsAuthenticated</code>: Checks if the user is authenticated</li>
+<li><code>IsAdmin</code>: Checks if the user is authenticated AND has the ADMIN role</li>
+</ol>
+<h4 id="basepermission">BasePermission</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BasePermission</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">exception</span> <span class="o">=</span> <span class="n">CustomException</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="nd">@abstractmethod</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="o">...</span>
+</span></code></pre></div>
+<p>This abstract class defines the interface that all permission classes must implement.</p>
+<h4 id="isauthenticated">IsAuthenticated</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">IsAuthenticated</span><span class="p">(</span><span class="n">BasePermission</span><span class="p">):</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">exception</span> <span class="o">=</span> <span class="n">UnauthorizedException</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">user</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="k">return</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uuid&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span></code></pre></div>
+<p>This permission checks if the user is authenticated by verifying that the user object exists and has a UUID.</p>
+<h4 id="isadmin">IsAdmin</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">IsAdmin</span><span class="p">(</span><span class="n">IsAuthenticated</span><span class="p">):</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">exception</span> <span class="o">=</span> <span class="n">ForbiddenException</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span>
+</span></code></pre></div>
+<p>This permission extends <code>IsAuthenticated</code> and adds an additional check for the ADMIN role.</p>
+<h3 id="permission-dependency">Permission Dependency</h3>
+<p>The <code>PermissionDependency</code> class is used to apply one or more permission checks to a route:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">PermissionDependency</span><span class="p">(</span><span class="n">SecurityBase</span><span class="p">):</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">BasePermission</span><span class="p">]]):</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="n">permissions</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="n">APIKeyHeader</span> <span class="o">=</span> <span class="n">APIKeyHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Authorization&quot;</span><span class="p">)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">scheme_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">permissions</span><span class="p">:</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>            <span class="bp">cls</span> <span class="o">=</span> <span class="n">permission</span><span class="p">()</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">cls</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">):</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>                <span class="k">raise</span> <span class="bp">cls</span><span class="o">.</span><span class="n">exception</span>
+</span></code></pre></div>
+<p>When a request is made to a protected route, <code>PermissionDependency</code> evaluates each permission class in order. If any permission check fails, it raises the corresponding exception.</p>
+<h3 id="applying-permissions-to-routes">Applying Permissions to Routes</h3>
+<p>Permissions are applied to routes using FastAPI's dependency injection system. Here's an example:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nd">@user_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">PermissionDependency</span><span class="p">([</span><span class="n">IsAdmin</span><span class="p">]))])</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="c1"># Only admin users can access this endpoint</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="o">...</span>
+</span></code></pre></div>
+<p>In this example, the <code>/users</code> endpoint is protected by the <code>IsAdmin</code> permission. Only users with the ADMIN role can access it.</p>
+<h2 id="example-scenarios">Example Scenarios</h2>
+<p>Let's walk through some common scenarios to see how the authorization flow works:</p>
+<h3 id="scenario-1-unauthenticated-user-accessing-protected-route">Scenario 1: Unauthenticated User Accessing Protected Route</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant AuthMiddleware
+    participant UserEndpoint
+    participant PermissionCheck
+
+    User-&gt;&gt;AuthMiddleware: GET /users (no token)
+    AuthMiddleware-&gt;&gt;AuthMiddleware: request.state.user = None
+    AuthMiddleware-&gt;&gt;UserEndpoint: Forward request
+    UserEndpoint-&gt;&gt;PermissionCheck: Check IsAdmin permission
+    PermissionCheck-&gt;&gt;PermissionCheck: user is None
+    PermissionCheck--&gt;&gt;UserEndpoint: Raise UnauthorizedException
+    UserEndpoint--&gt;&gt;User: 401 Unauthorized</code></pre>
+<h3 id="scenario-2-regular-user-accessing-admin-only-route">Scenario 2: Regular User Accessing Admin-Only Route</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant AuthMiddleware
+    participant UserEndpoint
+    participant PermissionCheck
+
+    User-&gt;&gt;AuthMiddleware: GET /users (with regular user token)
+    AuthMiddleware-&gt;&gt;AuthMiddleware: Validate token
+    AuthMiddleware-&gt;&gt;AuthMiddleware: request.state.user = {"uuid": "123", "role": "USER"}
+    AuthMiddleware-&gt;&gt;UserEndpoint: Forward request
+    UserEndpoint-&gt;&gt;PermissionCheck: Check IsAdmin permission
+    PermissionCheck-&gt;&gt;PermissionCheck: user.role != ADMIN
+    PermissionCheck--&gt;&gt;UserEndpoint: Raise ForbiddenException
+    UserEndpoint--&gt;&gt;User: 403 Forbidden</code></pre>
+<h3 id="scenario-3-admin-user-accessing-admin-only-route">Scenario 3: Admin User Accessing Admin-Only Route</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    actor Admin
+    participant AuthMiddleware
+    participant UserEndpoint
+    participant PermissionCheck
+    participant UserController
+
+    Admin-&gt;&gt;AuthMiddleware: GET /users (with admin token)
+    AuthMiddleware-&gt;&gt;AuthMiddleware: Validate token
+    AuthMiddleware-&gt;&gt;AuthMiddleware: request.state.user = {"uuid": "456", "role": "ADMIN"}
+    AuthMiddleware-&gt;&gt;UserEndpoint: Forward request
+    UserEndpoint-&gt;&gt;PermissionCheck: Check IsAdmin permission
+    PermissionCheck-&gt;&gt;PermissionCheck: user.role == ADMIN
+    PermissionCheck--&gt;&gt;UserEndpoint: Permission granted
+    UserEndpoint-&gt;&gt;UserController: get_users()
+    UserController--&gt;&gt;UserEndpoint: Return users
+    UserEndpoint--&gt;&gt;Admin: 200 OK with users data</code></pre>
+<h2 id="custom-permission-classes">Custom Permission Classes</h2>
+<p>You can create custom permission classes by extending <code>BasePermission</code> or any of its subclasses:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">IsProductOwner</span><span class="p">(</span><span class="n">IsAuthenticated</span><span class="p">):</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">exception</span> <span class="o">=</span> <span class="n">ForbiddenException</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>        <span class="c1"># Get the product ID from the path parameters</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        <span class="n">product_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">path_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_id&quot;</span><span class="p">)</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">product_id</span><span class="p">:</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        <span class="c1"># Check if the user owns this product</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        <span class="c1"># (Implementation would depend on your data access layer)</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        <span class="n">user_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uuid&quot;</span><span class="p">)</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>        <span class="k">return</span> <span class="k">await</span> <span class="n">product_service</span><span class="o">.</span><span class="n">is_owner</span><span class="p">(</span><span class="n">product_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="important-considerations">Important Considerations</h2>
+<ol>
+<li>
+<p><strong>Order of Permissions</strong>: Permissions are checked in the order they're provided to <code>PermissionDependency</code>. Put the most general checks first for better error messages.</p>
+</li>
+<li>
+<p><strong>Exceptions</strong>: Different permission classes raise different exceptions:</p>
+</li>
+<li><code>IsAuthenticated</code> raises <code>UnauthorizedException</code> (401)</li>
+<li>
+<p><code>IsAdmin</code> raises <code>ForbiddenException</code> (403)</p>
+</li>
+<li>
+<p><strong>Combining with Row-Level Permissions</strong>: This system can be combined with row-level permissions for more fine-grained access control.</p>
+</li>
+<li>
+<p><strong>Token Expiration</strong>: JWT tokens have an expiration time. When a token expires, the user will need to re-authenticate.</p>
+</li>
+<li>
+<p><strong>HTTPS</strong>: Always use HTTPS in production to protect tokens in transit.</p>
+</li>
+</ol>
+<h2 id="summary">Summary</h2>
+<p>The identity and role-based access control system in our application follows these key steps:</p>
+<ol>
+<li>The <code>AuthenticationMiddleware</code> authenticates users and attaches their information to the request</li>
+<li>Permission classes define different access requirements</li>
+<li>The <code>PermissionDependency</code> applies these permissions to routes</li>
+<li>Route handlers are only executed if all permission checks pass</li>
+</ol>
+<p>This system provides a flexible and extensible way to control access to our API endpoints based on user identity and role.</p>
+<hr />
+<h2 id="type-2-row-level-permissions">Type 2: Row-Level Permissions</h2>
+<p>While the Type 1 access control provides a way to restrict access to entire routes based on user roles, Type 2 access control (row-level permissions) allows for much more fine-grained access control at the individual data record level.</p>
+<h3 id="key-concepts">Key Concepts</h3>
+<p>Row-level permissions are built around several key concepts:</p>
+<ol>
+<li><strong>Principals</strong>: Identities or roles that can be granted permissions</li>
+<li><strong>Access Control Lists (ACLs)</strong>: Rules that define what principals can access which resources</li>
+<li><strong>Permissions</strong>: Specific actions that can be performed on a resource</li>
+</ol>
+<p>Let's explore each of these concepts and how they work together to provide granular access control.</p>
+<h3 id="principal-types">Principal Types</h3>
+<p>Principals represent different identities that might need access to resources. Our system defines several types of principals:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># A few examples of principals in our system</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">Everyone</span> <span class="o">=</span> <span class="n">SystemPrincipal</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;everyone&quot;</span><span class="p">)</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">Authenticated</span> <span class="o">=</span> <span class="n">SystemPrincipal</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;authenticated&quot;</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">userA</span> <span class="o">=</span> <span class="n">UserPrincipal</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;user123&quot;</span><span class="p">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">adminRole</span> <span class="o">=</span> <span class="n">RolePrincipal</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;ADMIN&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>We support these principal types:</p>
+<table>
+<thead>
+<tr>
+<th>Principal Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SystemPrincipal</code></td>
+<td>System-wide principals</td>
+<td><code>Everyone</code>, <code>Authenticated</code></td>
+</tr>
+<tr>
+<td><code>UserPrincipal</code></td>
+<td>Specific user identities</td>
+<td><code>UserPrincipal("user123")</code></td>
+</tr>
+<tr>
+<td><code>RolePrincipal</code></td>
+<td>Roles in the system</td>
+<td><code>RolePrincipal("ADMIN")</code></td>
+</tr>
+<tr>
+<td><code>PostPrincipal</code></td>
+<td>Custom principal for posts</td>
+<td><code>PostPrincipal("post123")</code></td>
+</tr>
+<tr>
+<td><code>ActionPrincipal</code></td>
+<td>Custom principal for actions</td>
+<td><code>ActionPrincipal("create")</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="access-control-lists-acls">Access Control Lists (ACLs)</h3>
+<p>ACLs define what principals can do with specific resources. Each ACL consists of entries with three components:</p>
+<ol>
+<li><strong>Action</strong> (<code>Allow</code> or <code>Deny</code>): Whether to grant or deny access</li>
+<li><strong>Principal</strong>: Who is affected by this rule</li>
+<li><strong>Permissions</strong>: What actions they can perform</li>
+</ol>
+<p>Here's an example ACL from the <code>User</code> model:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">__acl__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">basic_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="n">UserPermission</span><span class="o">.</span><span class="n">CREATE</span><span class="p">]</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">self_permissions</span> <span class="o">=</span> <span class="p">[</span><span class="n">UserPermission</span><span class="o">.</span><span class="n">READ</span><span class="p">,</span> <span class="n">UserPermission</span><span class="o">.</span><span class="n">UPDATE</span><span class="p">,</span> <span class="n">UserPermission</span><span class="o">.</span><span class="n">DELETE</span><span class="p">]</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">all_permissions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">UserPermission</span><span class="p">)</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="k">return</span> <span class="p">[</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>        <span class="p">(</span><span class="n">Allow</span><span class="p">,</span> <span class="n">Everyone</span><span class="p">,</span> <span class="n">basic_permissions</span><span class="p">),</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        <span class="p">(</span><span class="n">Allow</span><span class="p">,</span> <span class="n">UserPrincipal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">)),</span> <span class="n">self_permissions</span><span class="p">),</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>        <span class="p">(</span><span class="n">Allow</span><span class="p">,</span> <span class="n">RolePrincipal</span><span class="p">(</span><span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">),</span> <span class="n">all_permissions</span><span class="p">),</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="p">]</span>
+</span></code></pre></div>
+<p>This ACL means:</p>
+<ul>
+<li>Everyone can create users</li>
+<li>A user can read, update, and delete their own profile</li>
+<li>Admins can do anything with any user profile</li>
+</ul>
+<h3 id="row-level-authorization-flow">Row-Level Authorization Flow</h3>
+<p>When a user makes a request to access a specific resource, the following flow is executed:</p>
+<pre class="mermaid"><code>flowchart TD
+    A[User Request] --&gt; B[Authentication Middleware]
+    B -- User Authenticated --&gt; C[Route Handler]
+    C --&gt; D[Fetch Resource]
+    D --&gt; E[User Principals Lookup]
+    E --&gt; F[Access Control Check]
+    F -- "has_permission = true" --&gt; G[Return Resource]
+    F -- "has_permission = false" --&gt; H[Return 403 Forbidden]</code></pre>
+<p>Let's break down each step in detail:</p>
+<h3 id="acquiring-user-principals">Acquiring User Principals</h3>
+<p>When a request is processed, the system first needs to determine what principals are associated with the user:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_principals</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">user_controller</span><span class="p">:</span> <span class="n">UserController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Principal</span><span class="p">]:</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">principals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Principal</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Everyone</span><span class="p">]</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">user_uuid</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uuid&quot;</span><span class="p">)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_uuid</span><span class="p">:</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>        <span class="k">return</span> <span class="n">principals</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_controller</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_uuid</span><span class="o">=</span><span class="n">user_uuid</span><span class="p">)</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="n">principals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Authenticated</span><span class="p">)</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>    <span class="n">principals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UserPrincipal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">uuid</span><span class="p">)))</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">:</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>        <span class="n">principals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RolePrincipal</span><span class="p">(</span><span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">))</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>    <span class="k">return</span> <span class="n">principals</span>
+</span></code></pre></div>
+<p>This function:</p>
+<ol>
+<li>Starts with the <code>Everyone</code> principal (applies to all requests)</li>
+<li>If the user is authenticated, adds the <code>Authenticated</code> principal</li>
+<li>Adds a user-specific principal with the user's UUID</li>
+<li>If the user is an admin, adds the admin role principal</li>
+</ol>
+<p>The resulting list of principals will be used to evaluate permissions.</p>
+<h3 id="registering-resource-acls">Registering Resource ACLs</h3>
+<p>When a resource is fetched, its ACL is registered in the <code>ACLRegistry</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">user_uuid</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserResponse</span><span class="p">:</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">get_by_uuid</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">user_uuid</span><span class="p">)</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User not found.&quot;</span><span class="p">))</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="hll">    <span class="n">acl</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">__acl__</span><span class="p">()</span>
+</span></span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="hll">    <span class="n">ACLRegistry</span><span class="o">.</span><span class="n">set_acl</span><span class="p">(</span><span class="n">resource_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">acl</span><span class="o">=</span><span class="n">acl</span><span class="p">)</span>
+</span></span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="k">return</span> <span class="n">UserResponse</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The ACL is either:</p>
+<ul>
+<li>Defined directly on the model via the <code>__acl__</code> method</li>
+<li>Retrieved from the <code>ACLRegistry</code> if previously stored</li>
+</ul>
+<div class="admonition question">
+<p class="admonition-title">Question</p>
+<p>Why do we need to put these two highlighted lines in our controllers?</p>
+<p>The reason for this is because of the output type of our method. In general, the <code>_acl</code> method in the access control expects an object to be passed to it to perform validation on the desired object based on the <code>__acl__</code> defined in the model, but in this case our method finally returns UserResponse which is actually a json of the user information. We need to add the access level to this json so that the _acl method can finally control the access levels.</p>
+</div>
+<h3 id="permission-checking">Permission Checking</h3>
+<p>Once we have the user's principals and the resource's ACL, we can check if access should be granted:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># In a route handler:</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nd">@user_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">PermissionDependency</span><span class="p">([</span><span class="n">IsAuthenticated</span><span class="p">]))])</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="n">user_controller</span><span class="p">:</span> <span class="n">UserController</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Factory</span><span class="p">()</span><span class="o">.</span><span class="n">get_user_controller</span><span class="p">),</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="n">assert_access</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Permissions</span><span class="p">(</span><span class="n">UserPermission</span><span class="o">.</span><span class="n">READ</span><span class="p">)),</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">APIResponseType</span><span class="p">[</span><span class="n">UserResponse</span><span class="p">]:</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_controller</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_uuid</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="n">assert_access</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>  <span class="c1"># Check if user has READ permission for this resource</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="k">return</span> <span class="n">APIResponse</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The <code>assert_access</code> function is a dependency that checks if the current user has the required permissions for the specified resource.</p>
+<h3 id="permission-evaluation-logic">Permission Evaluation Logic</h3>
+<p>The permission check happens in the <code>has_permission</code> method of the <code>AccessControl</code> class:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">principals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Principal</span><span class="p">],</span> <span class="n">required_permissions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">resource</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>        <span class="n">resource</span> <span class="o">=</span> <span class="p">[</span><span class="n">resource</span><span class="p">]</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">permits</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="k">for</span> <span class="n">resource_obj</span> <span class="ow">in</span> <span class="n">resource</span><span class="p">:</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>        <span class="n">granted</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>        <span class="n">acl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acl</span><span class="p">(</span><span class="n">resource_obj</span><span class="p">)</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>        <span class="c1"># Convert required_permissions to list if it&#39;s a string</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>        <span class="n">permissions_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>            <span class="p">[</span><span class="n">required_permissions</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">required_permissions</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">required_permissions</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>        <span class="p">)</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>        <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">principal</span><span class="p">,</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">:</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>            <span class="n">is_required_permissions_in_permission</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>                <span class="n">required_permission</span> <span class="ow">in</span> <span class="n">permission</span> <span class="k">for</span> <span class="n">required_permission</span> <span class="ow">in</span> <span class="n">permissions_list</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>            <span class="p">)</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">action</span> <span class="o">==</span> <span class="n">Allow</span> <span class="ow">and</span> <span class="n">is_required_permissions_in_permission</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>                <span class="n">principal</span> <span class="ow">in</span> <span class="n">principals</span> <span class="ow">or</span> <span class="n">principal</span> <span class="o">==</span> <span class="n">Everyone</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>            <span class="p">):</span>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>                <span class="n">granted</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>                <span class="k">break</span>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>        <span class="n">permits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">granted</span><span class="p">)</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a>    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">permits</span><span class="p">)</span>
+</span></code></pre></div>
+<p>This method:</p>
+<ol>
+<li>Retrieves the ACL for the resource</li>
+<li>Iterates through ACL entries</li>
+<li>For each entry, checks if:<ul>
+<li>The action is <code>Allow</code></li>
+<li>The required permission is in the entry's permission list</li>
+<li>The principal matches one of the user's principals or is <code>Everyone</code></li>
+</ul>
+</li>
+<li>If a match is found, access is granted</li>
+</ol>
+<h2 id="example-scenarios_1">Example Scenarios</h2>
+<p>Let's walk through some common scenarios to see how row-level permissions work:</p>
+<h3 id="scenario-1-user-viewing-their-own-profile">Scenario 1: User Viewing Their Own Profile</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant API
+    participant UserController
+    participant AccessControl
+
+    User-&gt;&gt;API: GET /users/123 (own profile)
+    API-&gt;&gt;UserController: get_user(uuid=123)
+    UserController-&gt;&gt;UserController: Find user
+    UserController-&gt;&gt;UserController: Register ACL for User 123
+    UserController--&gt;&gt;API: Return user object
+    API-&gt;&gt;AccessControl: assert_access(principals=[Everyone, Authenticated, User:123], permission=READ, resource=User 123)
+    AccessControl-&gt;&gt;AccessControl: Check ACLs
+    AccessControl-&gt;&gt;AccessControl: (Allow, UserPrincipal(123), [READ, ...]) matches
+    AccessControl--&gt;&gt;API: Access granted
+    API--&gt;&gt;User: 200 OK with user data</code></pre>
+<h3 id="scenario-2-user-trying-to-access-another-users-profile">Scenario 2: User Trying to Access Another User's Profile</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant API
+    participant UserController
+    participant AccessControl
+
+    User-&gt;&gt;API: GET /users/456 (someone else's profile)
+    API-&gt;&gt;UserController: get_user(uuid=456)
+    UserController-&gt;&gt;UserController: Find user
+    UserController-&gt;&gt;UserController: Register ACL for User 456
+    UserController--&gt;&gt;API: Return user object
+    API-&gt;&gt;AccessControl: assert_access(principals=[Everyone, Authenticated, User:123], permission=READ, resource=User 456)
+    AccessControl-&gt;&gt;AccessControl: Check ACLs
+    AccessControl-&gt;&gt;AccessControl: No matching ACL found
+    AccessControl--&gt;&gt;API: Access denied
+    API--&gt;&gt;User: 403 Forbidden</code></pre>
+<h3 id="scenario-3-admin-accessing-any-users-profile">Scenario 3: Admin Accessing Any User's Profile</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    actor Admin
+    participant API
+    participant UserController
+    participant AccessControl
+
+    Admin-&gt;&gt;API: GET /users/456
+    API-&gt;&gt;UserController: get_user(uuid=456)
+    UserController-&gt;&gt;UserController: Find user
+    UserController-&gt;&gt;UserController: Register ACL for User 456
+    UserController--&gt;&gt;API: Return user object
+    API-&gt;&gt;AccessControl: assert_access(principals=[Everyone, Authenticated, User:789, Role:ADMIN], permission=READ, resource=User 456)
+    AccessControl-&gt;&gt;AccessControl: Check ACLs
+    AccessControl-&gt;&gt;AccessControl: (Allow, RolePrincipal(ADMIN), [READ, ...]) matches
+    AccessControl--&gt;&gt;API: Access granted
+    API--&gt;&gt;Admin: 200 OK with user data</code></pre>
+<h2 id="creating-custom-acls">Creating Custom ACLs</h2>
+<p>To implement row-level permissions for your models, you need to:</p>
+<ol>
+<li>Define permissions for your resource:</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">PostPermission</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    <span class="n">READ</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="n">CREATE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">UPDATE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="n">DELETE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span></code></pre></div>
+<ol>
+<li>Implement the <code>__acl__</code> method on your model:</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Post</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">IDUUIDMixin</span><span class="p">,</span> <span class="n">TimestampMixin</span><span class="p">):</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;posts&quot;</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="n">content</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">Text</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="n">user_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID4</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;users.uuid&quot;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>    <span class="n">user</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;posts&quot;</span><span class="p">)</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">__acl__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>        <span class="k">return</span> <span class="p">[</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>            <span class="p">(</span><span class="n">Allow</span><span class="p">,</span> <span class="n">Everyone</span><span class="p">,</span> <span class="p">[</span><span class="n">PostPermission</span><span class="o">.</span><span class="n">READ</span><span class="p">]),</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>            <span class="p">(</span><span class="n">Allow</span><span class="p">,</span> <span class="n">UserPrincipal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">)),</span> <span class="p">[</span><span class="n">PostPermission</span><span class="o">.</span><span class="n">UPDATE</span><span class="p">,</span> <span class="n">PostPermission</span><span class="o">.</span><span class="n">DELETE</span><span class="p">]),</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>            <span class="p">(</span><span class="n">Allow</span><span class="p">,</span> <span class="n">RolePrincipal</span><span class="p">(</span><span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">PostPermission</span><span class="p">)),</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>        <span class="p">]</span>
+</span></code></pre></div>
+<ol>
+<li>Register the ACL when retrieving the resource:</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">post_uuid</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PostResponse</span><span class="p">:</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    <span class="n">post</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_repository</span><span class="o">.</span><span class="n">get_by_uuid</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">post_uuid</span><span class="p">)</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">post</span><span class="p">:</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Post not found.&quot;</span><span class="p">))</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">acl</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">__acl__</span><span class="p">()</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>    <span class="n">ACLRegistry</span><span class="o">.</span><span class="n">set_acl</span><span class="p">(</span><span class="n">resource_id</span><span class="o">=</span><span class="n">post</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">acl</span><span class="o">=</span><span class="n">acl</span><span class="p">)</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>    <span class="k">return</span> <span class="n">PostResponse</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span></code></pre></div>
+<ol>
+<li>Use the permission check in your API route:</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nd">@post_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{post_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">post_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">post_controller</span><span class="p">:</span> <span class="n">PostController</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Factory</span><span class="p">()</span><span class="o">.</span><span class="n">get_post_controller</span><span class="p">),</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="n">assert_access</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Permissions</span><span class="p">(</span><span class="n">PostPermission</span><span class="o">.</span><span class="n">READ</span><span class="p">)),</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">APIResponseType</span><span class="p">[</span><span class="n">PostResponse</span><span class="p">]:</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">post</span> <span class="o">=</span> <span class="k">await</span> <span class="n">post_controller</span><span class="o">.</span><span class="n">get_post</span><span class="p">(</span><span class="n">post_uuid</span><span class="o">=</span><span class="n">post_id</span><span class="p">)</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="n">assert_access</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">post</span><span class="p">)</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    <span class="k">return</span> <span class="n">APIResponse</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="advantages-of-row-level-permissions">Advantages of Row-Level Permissions</h2>
+<ol>
+<li><strong>Fine-grained control</strong>: Control access to individual records rather than entire endpoints</li>
+<li><strong>Flexible permission models</strong>: Define complex permission schemes based on multiple factors</li>
+<li><strong>Declarative syntax</strong>: Express permissions in a clear, declarative way</li>
+<li><strong>Centralized definition</strong>: Keep all permission logic for a resource with the resource itself</li>
+</ol>
+<h2 id="important-considerations_1">Important Considerations</h2>
+<ol>
+<li><strong>Performance</strong>: ACL lookups add additional overhead, consider caching strategies for large systems</li>
+<li><strong>Complexity</strong>: Row-level permissions add complexity to your codebase, use them only when necessary</li>
+<li><strong>Consistency</strong>: Ensure all routes that access a resource properly check permissions</li>
+<li><strong>Inheritance</strong>: Consider how permissions should be inherited in hierarchical data models</li>
+</ol>
+<h2 id="combining-both-access-control-types">Combining Both Access Control Types</h2>
+<p>Our system allows for combining both Types of access control:</p>
+<ol>
+<li><strong>Type 1 (Role-based) first</strong>: Use <code>PermissionDependency([IsAuthenticated])</code> to check basic route access</li>
+<li><strong>Type 2 (Row-level) second</strong>: Use <code>assert_access(resource=user)</code> to check specific resource access</li>
+</ol>
+<p>This provides a layered approach to security:</p>
+<ul>
+<li>Type 1 prevents unauthorized access to entire routes</li>
+<li>Type 2 ensures users can only access specific records they have permission for</li>
+</ul>
+<h2 id="summary_1">Summary</h2>
+<p>The row-level permission system in our application allows for fine-grained access control through:</p>
+<ol>
+<li>A flexible principal-based architecture</li>
+<li>Declarative ACLs defined on resources</li>
+<li>A permission checking system integrated with FastAPI dependencies</li>
+<li>Support for complex permission scenarios</li>
+</ol>
+<p>By combining both Type 1 and Type 2 access controls, our application provides a comprehensive security model that can adapt to a wide range of access control requirements.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../authentication/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Authentication">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Authentication
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../responses/" class="md-footer__link md-footer__link--next" aria-label="Next: Responses">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Responses
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select", "navigation.top", "toc.follow", "navigation.footer"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
